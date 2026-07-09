@@ -1,0 +1,28 @@
+{
+  "nav": {
+    "home": "Home",
+    "packages": "Packages",
+    "destinations": "Destinations",
+    "contact": "Contact"
+  },
+  "footer": {
+    "tagline": "Your next adventure starts here.",
+    "rights": "All rights reserved.",
+    "nationalTours": "Domestic tours",
+    "internationalTours": "International tours"
+  },
+  "common": {
+    "whatsappCta": "Contact us on WhatsApp",
+    "whatsappDefaultMessage": "Hi! I'd like more information about your travel packages.",
+    "themeToggleLight": "Switch to light mode",
+    "themeToggleDark": "Switch to dark mode",
+    "skipToContent": "Skip to main content"
+  },
+  "home": {
+    "heroTitle": "Live unforgettable experiences",
+    "heroSubtitle": "Domestic and international travel packages designed for you.",
+    "heroCta": "View packages",
+    "agencyTitle": "About L&A Viajes y Aventuras",
+    "agencyBody": "We are a travel agency dedicated to designing memorable travel experiences, with personalized attention and tailor-made plans for every traveler."
+  }
+}
