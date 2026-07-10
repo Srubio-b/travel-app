@@ -8,14 +8,9 @@ import { Link } from "@/lib/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getPackageBySlug } from "@/lib/supabase/queries";
 import { SITE_URL } from "@/lib/config/site";
+import { formatCOP } from "@/lib/format/currency";
 
 export const revalidate = 300;
-
-const COP_FORMATTER = new Intl.NumberFormat("es-CO", {
-  style: "currency",
-  currency: "COP",
-  maximumFractionDigits: 0,
-});
 
 type PackageDetailPageProps = {
   params: Promise<{ locale: string; slug: string }>;
@@ -53,9 +48,10 @@ export default async function PackageDetailPage({
   params,
 }: PackageDetailPageProps) {
   const { slug } = await params;
-  const [t, tCatalog, supabase] = await Promise.all([
+  const [t, tCatalog, tCommon, supabase] = await Promise.all([
     getTranslations("package"),
     getTranslations("catalog"),
+    getTranslations("common"),
     createClient(),
   ]);
 
@@ -184,10 +180,10 @@ export default async function PackageDetailPage({
               {tCatalog("days", { count: pkg.durationDays })}
             </p>
             <p className="text-2xl font-bold text-primary">
-              {COP_FORMATTER.format(pkg.price)}
+              {formatCOP(pkg.price)}
             </p>
             <WhatsAppButton
-              message={`¡Hola! Quiero información sobre ${pkg.title}.`}
+              message={tCommon("whatsappPackageInquiry", { title: pkg.title })}
             />
           </div>
         </div>
