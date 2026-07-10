@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import { LocaleSwitcher } from "@/components/layout/LocaleSwitcher";
 
 export async function Header() {
   const t = await getTranslations("nav");
@@ -19,10 +20,7 @@ export async function Header() {
         </nav>
 
         <div className="flex items-center gap-3">
-          {/* Locale switcher: full implementation lands in PR 2 */}
-          <span className="text-xs uppercase text-foreground/60" aria-hidden="true">
-            ES / EN
-          </span>
+          <LocaleSwitcher />
           <ThemeToggle />
         </div>
       </div>
