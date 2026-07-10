@@ -30,10 +30,13 @@ export const metadata: Metadata = {
 
 const businessSchema = {
   "@context": "https://schema.org",
-  "@type": "TravelAgency",
+  "@type": ["TravelAgency", "LocalBusiness"],
   name: "L&A Viajes y Aventuras",
   description:
     "Agencia de turismo especializada en planes nacionales e internacionales.",
+  url: SITE_URL,
+  areaServed: "CO",
+  priceRange: "$$",
 };
 
 export function generateStaticParams() {
