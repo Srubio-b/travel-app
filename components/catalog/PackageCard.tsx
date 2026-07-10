@@ -1,20 +1,21 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
 import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
+import { formatCOP } from "@/lib/format/currency";
 import type { PackageCardData } from "@/lib/supabase/queries";
 
-const COP_FORMATTER = new Intl.NumberFormat("es-CO", {
-  style: "currency",
-  currency: "COP",
-  maximumFractionDigits: 0,
-});
-
 type PackageCardProps = {
-  pkg: PackageCardData;
+  pkg: Pick<
+    PackageCardData,
+    "slug" | "title" | "price" | "durationDays" | "isNational" | "primaryImage"
+  >;
 };
 
 export async function PackageCard({ pkg }: PackageCardProps) {
-  const t = await getTranslations("catalog");
+  const [t, tCommon] = await Promise.all([
+    getTranslations("catalog"),
+    getTranslations("common"),
+  ]);
   const badgeLabel = pkg.isNational
     ? t("badgeNational")
     : t("badgeInternational");
@@ -51,7 +52,7 @@ export async function PackageCard({ pkg }: PackageCardProps) {
         </p>
 
         <p className="text-xl font-bold text-primary">
-          {COP_FORMATTER.format(pkg.price)}
+          {formatCOP(pkg.price)}
         </p>
 
         <div className="mt-auto flex flex-col gap-2 pt-2 sm:flex-row sm:items-center sm:justify-between">
@@ -62,7 +63,7 @@ export async function PackageCard({ pkg }: PackageCardProps) {
             {t("viewDetails")}
           </Link>
           <WhatsAppButton
-            message={`¡Hola! Quiero información sobre ${pkg.title}.`}
+            message={tCommon("whatsappPackageInquiry", { title: pkg.title })}
           />
         </div>
       </div>

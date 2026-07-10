@@ -14,6 +14,7 @@
   "common": {
     "whatsappCta": "Contáctanos por WhatsApp",
     "whatsappDefaultMessage": "¡Hola! Quiero más información sobre sus planes de viaje.",
+    "whatsappPackageInquiry": "¡Hola! Quiero información sobre {title}.",
     "contactUs": "Contáctanos",
     "themeToggleLight": "Cambiar a modo claro",
     "themeToggleDark": "Cambiar a modo oscuro",
@@ -44,5 +45,20 @@
     "label": "Idioma",
     "es": "Español",
     "en": "English"
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "body": "El contenido que buscás no existe o ya no está disponible.",
+    "cta": "Volver al inicio"
+  },
+  "package": {
+    "includes": "Qué incluye",
+    "excludes": "Qué no incluye",
+    "destinationsIncluded": "Destinos incluidos",
+    "gallery": "Galería"
+  },
+  "destination": {
+    "availablePackages": "Paquetes disponibles",
+    "noPackages": "Todavía no hay paquetes activos para este destino."
   }
 }
