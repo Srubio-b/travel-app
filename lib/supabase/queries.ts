@@ -3,6 +3,21 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
 
+/**
+ * Thrown when a Supabase query fails for reasons other than "not found"
+ * (network blip, RLS misconfiguration, transient DB error, etc). Callers
+ * should let this propagate to the route's error boundary instead of
+ * treating it the same as a genuine 404 — a silent 404 on a real backend
+ * failure is worse for SEO/monitoring than a visible error.
+ */
+export class SupabaseQueryError extends Error {
+  constructor(message: string, cause: unknown) {
+    super(message);
+    this.name = "SupabaseQueryError";
+    this.cause = cause;
+  }
+}
+
 export type PackageDestinationSummary = {
   slug: string;
   name: string;
@@ -156,6 +171,8 @@ type PackageDetailRow = {
       slug: string;
       name: string;
       country: string;
+      is_active: boolean;
+      deleted_at: string | null;
     } | null;
   }[];
 };
@@ -177,7 +194,7 @@ export async function getPackageBySlug(
       what_includes, what_excludes,
       package_images (url, alt_text, is_primary, display_order),
       package_destinations (
-        destinations ( slug, name, country )
+        destinations ( slug, name, country, is_active, deleted_at )
       )
     `,
     )
@@ -189,8 +206,14 @@ export async function getPackageBySlug(
     .maybeSingle();
 
   if (error) {
-    console.error("getPackageBySlug: failed to fetch package from Supabase:", error);
-    return null;
+    console.error(
+      `getPackageBySlug: failed to fetch package "${slug}" from Supabase:`,
+      error,
+    );
+    throw new SupabaseQueryError(
+      `Failed to fetch package "${slug}" from Supabase`,
+      error,
+    );
   }
 
   if (!data) return null;
@@ -209,7 +232,9 @@ export async function getPackageBySlug(
 
   const destinations = (row.package_destinations ?? [])
     .map((pd) => pd.destinations)
-    .filter((d): d is PackageDestinationSummary => d !== null);
+    .filter((d): d is NonNullable<typeof d> => d !== null)
+    .filter((d) => d.is_active && d.deleted_at === null)
+    .map(({ slug, name, country }) => ({ slug, name, country }));
 
   return {
     id: row.id,
@@ -302,8 +327,14 @@ export async function getDestinationBySlug(
     .maybeSingle();
 
   if (error) {
-    console.error("getDestinationBySlug: failed to fetch destination from Supabase:", error);
-    return null;
+    console.error(
+      `getDestinationBySlug: failed to fetch destination "${slug}" from Supabase:`,
+      error,
+    );
+    throw new SupabaseQueryError(
+      `Failed to fetch destination "${slug}" from Supabase`,
+      error,
+    );
   }
 
   if (!data) return null;
