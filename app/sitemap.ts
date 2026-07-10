@@ -1,8 +1,12 @@
 import type { MetadataRoute } from "next";
 import { routing } from "@/lib/i18n/routing";
 import { SITE_URL as BASE_URL } from "@/lib/config/site";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import { getAllActiveSlugs } from "@/lib/supabase/queries";
+
+// Statically generate the sitemap and refresh it every 5 minutes, matching
+// the ISR window used by the catalog listing/detail pages.
+export const revalidate = 300;
 
 function withAlternates(path: string) {
   return {
@@ -44,7 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticEntries = buildStaticEntries();
 
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { packages, destinations } = await getAllActiveSlugs(supabase);
 
     const packageEntries: MetadataRoute.Sitemap = routing.locales.flatMap(
