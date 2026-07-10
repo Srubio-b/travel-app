@@ -44,5 +44,20 @@
     "label": "Idioma",
     "es": "Español",
     "en": "English"
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "body": "El contenido que buscás no existe o ya no está disponible.",
+    "cta": "Volver al inicio"
+  },
+  "package": {
+    "includes": "Qué incluye",
+    "excludes": "Qué no incluye",
+    "destinationsIncluded": "Destinos incluidos",
+    "gallery": "Galería"
+  },
+  "destination": {
+    "availablePackages": "Paquetes disponibles",
+    "noPackages": "Todavía no hay paquetes activos para este destino."
   }
 }
