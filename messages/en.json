@@ -25,5 +25,24 @@
     "heroCta": "View packages",
     "agencyTitle": "About L&A Viajes y Aventuras",
     "agencyBody": "We are a travel agency dedicated to designing memorable travel experiences, with personalized attention and tailor-made plans for every traveler."
+  },
+  "catalog": {
+    "title": "Our packages",
+    "subtitle": "Choose your next destination, domestic or international.",
+    "filterLabel": "Filter by type",
+    "filterAll": "All",
+    "filterNational": "Domestic",
+    "filterInternational": "International",
+    "emptyTitle": "No packages available",
+    "emptyBody": "Contact us and we'll help you plan the perfect trip.",
+    "days": "{count, plural, one {# day} other {# days}}",
+    "viewDetails": "View details",
+    "badgeNational": "Domestic",
+    "badgeInternational": "International"
+  },
+  "localeSwitcher": {
+    "label": "Language",
+    "es": "Español",
+    "en": "English"
   }
 }

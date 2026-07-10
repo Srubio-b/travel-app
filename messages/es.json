@@ -25,5 +25,24 @@
     "heroCta": "Ver paquetes",
     "agencyTitle": "Sobre L&A Viajes y Aventuras",
     "agencyBody": "Somos una agencia de turismo dedicada a diseñar experiencias de viaje memorables, con atención personalizada y planes a la medida de cada viajero."
+  },
+  "catalog": {
+    "title": "Nuestros paquetes",
+    "subtitle": "Elegí tu próximo destino, nacional o internacional.",
+    "filterLabel": "Filtrar por tipo",
+    "filterAll": "Todos",
+    "filterNational": "Nacional",
+    "filterInternational": "Internacional",
+    "emptyTitle": "No hay paquetes disponibles",
+    "emptyBody": "Contáctanos y te ayudamos a armar el viaje ideal para vos.",
+    "days": "{count, plural, one {# día} other {# días}}",
+    "viewDetails": "Ver más",
+    "badgeNational": "Nacional",
+    "badgeInternational": "Internacional"
+  },
+  "localeSwitcher": {
+    "label": "Idioma",
+    "es": "Español",
+    "en": "English"
   }
 }
