@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "packages": "Paquetes",
+    "destinations": "Destinos",
+    "contact": "Contacto"
+  },
+  "footer": {
+    "tagline": "Tu próxima aventura empieza aquí.",
+    "rights": "Todos los derechos reservados.",
+    "nationalTours": "Turismo nacional",
+    "internationalTours": "Turismo internacional"
+  },
+  "common": {
+    "whatsappCta": "Contáctanos por WhatsApp",
+    "whatsappDefaultMessage": "¡Hola! Quiero más información sobre sus planes de viaje.",
+    "contactUs": "Contáctanos",
+    "themeToggleLight": "Cambiar a modo claro",
+    "themeToggleDark": "Cambiar a modo oscuro",
+    "skipToContent": "Saltar al contenido principal"
+  },
+  "home": {
+    "heroTitle": "Viví experiencias inolvidables",
+    "heroSubtitle": "Planes turísticos nacionales e internacionales pensados para vos.",
+    "heroCta": "Ver paquetes",
+    "agencyTitle": "Sobre L&A Viajes y Aventuras",
+    "agencyBody": "Somos una agencia de turismo dedicada a diseñar experiencias de viaje memorables, con atención personalizada y planes a la medida de cada viajero."
+  }
+}
