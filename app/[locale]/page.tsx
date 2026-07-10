@@ -6,7 +6,7 @@ import { Link } from "@/lib/i18n/navigation";
 
 async function getFeaturedPackage() {
   const supabase = await createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("travel_packages")
     .select("title, slug, package_images(url, alt_text, is_primary)")
     .eq("is_active", true)
@@ -14,6 +14,10 @@ async function getFeaturedPackage() {
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
+
+  if (error) {
+    console.error("Failed to fetch featured package:", error);
+  }
 
   if (!data) return null;
 

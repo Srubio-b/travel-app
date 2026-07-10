@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/lib/i18n/routing";
 import { ThemeProvider, themeAntiFlashScript } from "@/components/shared/ThemeProvider";
 import { SchemaScript } from "@/components/shared/SchemaScript";
+import { SITE_URL } from "@/lib/config/site";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -18,9 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://laviajesyaventuras.com",
-  ),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "L&A Viajes y Aventuras",
     template: "%s | L&A Viajes y Aventuras",

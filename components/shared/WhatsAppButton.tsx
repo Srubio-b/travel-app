@@ -15,9 +15,37 @@ export async function WhatsAppButton({
   floating = false,
 }: WhatsAppButtonProps) {
   const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
-  if (!number) return null;
-
   const t = await getTranslations("common");
+
+  if (!number) {
+    console.error(
+      "WhatsAppButton: NEXT_PUBLIC_WHATSAPP_NUMBER is not configured. " +
+        "This is the sole conversion path for the site and must be set.",
+    );
+
+    const fallbackHref = process.env.NEXT_PUBLIC_CONTACT_EMAIL
+      ? `mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}`
+      : undefined;
+
+    const className = floating
+      ? "fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-neutral-400 text-2xl text-white shadow-lg cursor-not-allowed"
+      : "inline-flex items-center justify-center rounded-full bg-neutral-400 px-5 py-2.5 text-sm font-medium text-white cursor-not-allowed";
+
+    if (fallbackHref) {
+      return (
+        <a href={fallbackHref} className={className} aria-label={t("contactUs")}>
+          {floating ? "✉️" : t("contactUs")}
+        </a>
+      );
+    }
+
+    return (
+      <span className={className} aria-disabled="true">
+        {floating ? "✉️" : t("contactUs")}
+      </span>
+    );
+  }
+
   const text = encodeURIComponent(message ?? t("whatsappDefaultMessage"));
   const href = `https://wa.me/${number}?text=${text}`;
 
