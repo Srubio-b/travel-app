@@ -57,6 +57,13 @@
     "destinationsIncluded": "Destinations included",
     "gallery": "Gallery"
   },
+  "destinations": {
+    "title": "Destinations",
+    "subtitle": "Explore all available destinations.",
+    "emptyTitle": "No destinations available",
+    "emptyBody": "We'll be adding new destinations soon. Contact us for more information.",
+    "viewDestinations": "View destinations"
+  },
   "destination": {
     "availablePackages": "Available packages",
     "noPackages": "No active packages for this destination yet."

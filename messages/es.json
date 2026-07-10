@@ -57,6 +57,13 @@
     "destinationsIncluded": "Destinos incluidos",
     "gallery": "Galería"
   },
+  "destinations": {
+    "title": "Destinos",
+    "subtitle": "Explorá todos los destinos disponibles.",
+    "emptyTitle": "No hay destinos disponibles",
+    "emptyBody": "Pronto estaremos agregando nuevos destinos. Contactanos para más información.",
+    "viewDestinations": "Ver destinos"
+  },
   "destination": {
     "availablePackages": "Paquetes disponibles",
     "noPackages": "Todavía no hay paquetes activos para este destino."

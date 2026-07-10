@@ -398,6 +398,57 @@ export type ActiveSlugs = {
  * Fetches all active, published package slugs and active destination slugs.
  * Used to build the dynamic sitemap with hreflang alternates.
  */
+export type DestinationCardData = {
+  slug: string;
+  name: string;
+  country: string;
+  region: string | null;
+  description: string | null;
+  imageUrl: string | null;
+};
+
+type ListDestinationsRow = {
+  slug: string;
+  name: string;
+  country: string;
+  region: string | null;
+  description: string | null;
+  image_url: string | null;
+};
+
+/**
+ * Lists all active destinations for the destination listing page.
+ * Includes a computed public storage URL for each destination's hero image.
+ */
+export async function listDestinations(
+  supabase: SupabaseClient<Database>,
+): Promise<DestinationCardData[]> {
+  const { data, error } = await supabase
+    .from("destinations")
+    .select("slug, name, country, region, description, image_url")
+    .eq("is_active", true)
+    .is("deleted_at", null)
+    .order("name", { ascending: true });
+
+  if (error) {
+    console.error("listDestinations: failed to fetch destinations from Supabase:", error);
+    return [];
+  }
+
+  const rows = (data ?? []) as unknown as ListDestinationsRow[];
+
+  return rows.map((row) => ({
+    slug: row.slug,
+    name: row.name,
+    country: row.country,
+    region: row.region,
+    description: row.description,
+    imageUrl: row.image_url
+      ? supabase.storage.from("package-images").getPublicUrl(row.image_url).data.publicUrl
+      : null,
+  }));
+}
+
 export async function getAllActiveSlugs(
   supabase: SupabaseClient<Database>,
 ): Promise<ActiveSlugs> {
