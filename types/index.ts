@@ -36,11 +36,26 @@ export interface Destination {
   country: string;
   region: string | null;
   image_url: string | null;
+  meta_title: string | null;
+  meta_description: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
 }
+
+// ── Shared Admin Action Result ──────────────────────────────
+
+/**
+ * Return type for all admin Server Actions.
+ *
+ * Mirrors the AuthResult pattern but adds an optional `data` field
+ * that carries the created/updated entity's id so the caller can
+ * redirect or reference it.
+ */
+export type ActionResult =
+  | { success: true; message?: string; data?: { id: string } }
+  | { success: false; error: string; field?: string };
 
 // ── Travel Packages ────────────────────────────────────────
 
