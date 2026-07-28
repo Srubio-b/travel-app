@@ -1,6 +1,4 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
+# === DEPENDENCIAS ===
 /node_modules
 /.pnp
 .pnp.*
@@ -10,33 +8,70 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
-/coverage
-
-# next.js
+# === NEXT.JS ===
 /.next/
 /out/
 
-# production
+# === BUILD ===
 /build
+/dist
 
-# misc
-.DS_Store
+# === TESTING ===
+/coverage
+
+# === ENTORNO Y SECRETOS (NUNCA commiteaar) ===
+.env
+.env.*
+!.env.example
 *.pem
 
-# debug
+# === LOGS ===
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# === SISTEMA OPERATIVO ===
+.DS_Store
+Thumbs.db
+desktop.ini
 
-# vercel
-.vercel
+# === EDITOR / IDE ===
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.vs/
 
-# typescript
+# === TYPESCRIPT ===
 *.tsbuildinfo
 next-env.d.ts
-.atl
+
+# === VERCEL ===
+.vercel
+
+# === AI AGENTS — skills y config local (NO van al repo) ===
+.agents/
+.opencode/
+.atl/
+
+# === SDD / OPENSPEC — artifacts de desarrollo ===
+openspec/
+
+# === ARCHIVOS DE DESARROLLO NO ESENCIALES ===
+skills-lock.json
+prompts_desarrollo_fases_actualizado.md
+historias_de_usuario.md
+
+# === DOCS LOCALES ===
+/docs/
+
+# === ASSETS GENERADOS / STATIC DEFAULTS ===
+public/*.svg
+!public/favicon.ico
+
+# === UPLOADS / ARCHIVOS TEMPORALES ===
+/uploads/
+/tmp/
+*.log

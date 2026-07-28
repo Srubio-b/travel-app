@@ -17,15 +17,28 @@ Plataforma web para la agencia de turismo **L&A Viajes y Aventuras**. Catálogo 
 ```
 travel-app/
 ├── app/                 # Next.js App Router (páginas y API Routes)
+│   ├── [locale]/        # Rutas internacionalizadas
+│   │   ├── admin/       # Panel de administración (CRUD)
+│   │   ├── auth/        # Login / Register
+│   │   ├── destinos/    # Catálogo público de destinos
+│   │   ├── mi-cuenta/   # Perfil del cliente
+│   │   └── paquetes/    # Catálogo público de paquetes
+│   └── actions/         # Server Actions
 ├── components/          # Componentes de UI reutilizables
+│   ├── admin/           # Componentes del panel admin
+│   ├── catalog/         # Componentes del catálogo público
+│   └── layout/          # Layout, header, sidebar, footer
 ├── domain/              # Entidades y reglas de negocio
 ├── application/         # Casos de uso / servicios de aplicación
 ├── infrastructure/      # Adaptadores de infraestructura
 ├── lib/
+│   ├── auth/            # Utilidades de autenticación
 │   ├── supabase/        # Clientes Supabase (browser y server)
 │   └── utils/           # Utilidades generales
-├── types/               # Definiciones de tipos globales
-└── docs/                # Documentación y decisiones de arquitectura
+├── messages/            # Traducciones i18n (es/en)
+├── supabase/
+│   └── migrations/      # Migraciones de base de datos
+└── types/               # Definiciones de tipos globales
 ```
 
 ## Requisitos
