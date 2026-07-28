@@ -3,7 +3,11 @@
     "home": "Home",
     "packages": "Packages",
     "destinations": "Destinations",
-    "contact": "Contact"
+    "contact": "Contact",
+    "login": "Sign in",
+    "myAccount": "My account",
+    "admin": "Admin",
+    "logout": "Sign out"
   },
   "footer": {
     "tagline": "Your next adventure starts here.",
@@ -21,11 +25,13 @@
     "skipToContent": "Skip to main content"
   },
   "home": {
-    "heroTitle": "Live unforgettable experiences",
-    "heroSubtitle": "Domestic and international travel packages designed for you.",
+    "heroTitle": "Viví experiencias inolvidables",
+    "heroSubtitle": "Planes turísticos nacionales e internacionales pensados para vos.",
     "heroCta": "View packages",
+    "featuredTitle": "Featured packages",
+    "featuredSubtitle": "Handpicked experiences for you.",
     "agencyTitle": "About L&A Viajes y Aventuras",
-    "agencyBody": "We are a travel agency dedicated to designing memorable travel experiences, with personalized attention and tailor-made plans for every traveler."
+    "agencyBody": "We are a travel agency dedicated to designing memorable travel experiences, with personalized attention and custom-made plans for every traveler."
   },
   "catalog": {
     "title": "Our packages",
@@ -67,5 +73,149 @@
   "destination": {
     "availablePackages": "Available packages",
     "noPackages": "No active packages for this destination yet."
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "submit": "Sign in",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Register"
+    },
+    "register": {
+      "title": "Create account",
+      "fullNameLabel": "Full name",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "submit": "Sign up",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Sign in",
+      "confirmationMessage": "Check your email to confirm your account.",
+      "passwordError": "Password must be at least 6 characters."
+    }
+  },
+  "profile": {
+    "title": "My Profile",
+    "fullNameLabel": "Full name",
+    "emailLabel": "Email",
+    "phoneLabel": "Phone",
+    "avatarLabel": "Avatar",
+    "save": "Save changes",
+    "saved": "Profile updated",
+    "avatarChange": "Change photo",
+    "avatarRemove": "Remove photo",
+    "phoneError": "Invalid phone format.",
+    "avatarTypeError": "Unsupported format. Use PNG, JPEG, WebP or GIF.",
+    "avatarSizeError": "Image is too large. Maximum 2 MB."
+  },
+  "admin": {
+    "title": "Admin panel",
+    "sidebar": {
+      "destinations": "Destinations",
+      "packages": "Packages",
+      "plans": "Plans"
+    },
+    "destinos": {
+      "title": "Destinations",
+      "create": "Create destination",
+      "edit": "Edit",
+      "delete": "Delete",
+      "confirmDeleteTitle": "Delete destination",
+      "confirmDeleteMessage": "Are you sure? It will be hidden from the panel but data will be preserved.",
+      "confirmLabel": "Delete",
+      "cancelLabel": "Cancel",
+      "search": "Search destinations...",
+      "noResults": "No destinations found.",
+      "columnName": "Name",
+      "columnCountry": "Country",
+      "columnRegion": "Region",
+      "columnActive": "Active",
+      "yes": "Yes",
+      "no": "No",
+      "form": {
+        "name": "Name",
+        "slug": "Slug",
+        "slugHelper": "Auto-generated from the name. You can edit it manually.",
+        "description": "Description",
+        "country": "Country",
+        "region": "Region",
+        "image": "Image",
+        "isActive": "Active",
+        "metaTitle": "Meta title (SEO)",
+        "metaDescription": "Meta description (SEO)",
+        "save": "Save",
+        "saveChanges": "Save changes",
+        "cancel": "Cancel",
+        "upload": "Upload image",
+        "change": "Change image",
+        "remove": "Remove image",
+        "uploading": "Uploading..."
+      },
+      "errors": {
+        "duplicateSlug": "A destination with this slug already exists.",
+        "imageTooLarge": "Image is too large. Maximum 5 MB."
+      }
+    },
+    "paquetes": {
+      "title": "Packages",
+      "create": "Create package",
+      "edit": "Edit",
+      "delete": "Delete",
+      "confirmDeleteTitle": "Delete package",
+      "confirmDeleteMessage": "Are you sure? It will be hidden from the panel but data will be preserved.",
+      "confirmDelete": "Delete",
+      "cancel": "Cancel",
+      "search": "Search packages...",
+      "noResults": "No packages found.",
+      "columnName": "Name",
+      "columnType": "Type",
+      "columnPrice": "Price",
+      "columnDuration": "Duration",
+      "columnStatus": "Status",
+      "badge": {
+        "draft": "Draft",
+        "published": "Published",
+        "national": "Domestic",
+        "international": "International"
+      },
+      "actions": {
+        "publish": "Publish",
+        "unpublish": "Unpublish"
+      },
+      "form": {
+        "title": "Title",
+        "slug": "Slug",
+        "slugHelper": "Auto-generated from the title. You can edit it manually.",
+        "description": "Description",
+        "includes": "What's included",
+        "excludes": "What's not included",
+        "price": "Price",
+        "duration": "Duration (days)",
+        "isNational": "Domestic",
+        "isActive": "Active",
+        "publishNow": "Publish now",
+        "destinations": "Destinations",
+        "destinosSearch": "Search destinations...",
+        "destinosCount": "{count} selected",
+        "destinosEmpty": "No destinations found.",
+        "images": "Image gallery",
+        "imagesCount": "{count} images · First one is primary",
+        "imagePrimary": "Primary",
+        "imageAlt": "Image {n}",
+        "save": "Save",
+        "saveChanges": "Save changes",
+        "cancel": "Cancel",
+        "upload": "Upload image",
+        "change": "Change image",
+        "remove": "Remove image",
+        "uploading": "Uploading..."
+      },
+      "errors": {
+        "duplicateSlug": "Another package with this slug already exists.",
+        "noDestinations": "Select at least one destination.",
+        "maxImages": "Maximum 10 images per package."
+      }
+    }
   }
 }
