@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { PublicLayout } from "@/components/layout/PublicLayout";
-import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
 import { PackageCard } from "@/components/catalog/PackageCard";
 import { createClient } from "@/lib/supabase/server";
 import { getDestinationBySlug } from "@/lib/supabase/queries";
 import { SITE_URL } from "@/lib/config/site";
+import { FALLBACK_IMAGES } from "@/lib/config/images";
 
 export const revalidate = 300;
 
@@ -21,9 +21,7 @@ export async function generateMetadata({
   const supabase = await createClient();
   const destination = await getDestinationBySlug(supabase, slug);
 
-  if (!destination) {
-    return {};
-  }
+  if (!destination) return {};
 
   const url = `${SITE_URL}/${locale}/destinos/${slug}`;
   const description =
@@ -54,26 +52,24 @@ export default async function DestinationPage({
 
   const destination = await getDestinationBySlug(supabase, slug);
 
-  if (!destination) {
-    notFound();
-  }
+  if (!destination) notFound();
 
   return (
     <PublicLayout>
-      <section className="relative flex min-h-[40vh] items-center justify-center overflow-hidden bg-surface dark:bg-surface-dark">
-        {destination.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={destination.imageUrl}
-            alt={destination.name}
-            className="absolute inset-0 h-full w-full object-cover opacity-60"
-          />
-        ) : null}
+      {/* ───── Hero ───── */}
+      <section className="relative flex min-h-[50vh] items-center justify-center overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={destination.imageUrl ?? FALLBACK_IMAGES.travel}
+          alt={destination.name}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/30 to-transparent" />
         <div className="relative z-10 mx-auto max-w-2xl px-6 text-center">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          <h1 className="font-display text-5xl leading-display tracking-tight text-white sm:text-6xl lg:text-7xl">
             {destination.name}
           </h1>
-          <p className="mt-2 text-lg text-foreground/80">
+          <p className="mt-2 text-lg text-white/70">
             {destination.region
               ? `${destination.region}, ${destination.country}`
               : destination.country}
@@ -81,27 +77,33 @@ export default async function DestinationPage({
         </div>
       </section>
 
-      <section className="mx-auto max-w-4xl px-6 py-12">
-        {destination.description ? (
-          <p className="text-foreground/80">{destination.description}</p>
-        ) : null}
-
-        <h2 className="mt-10 text-2xl font-semibold">
-          {t("availablePackages")}
-        </h2>
-
-        {destination.packages.length === 0 ? (
-          <div className="mt-4 flex flex-col items-center gap-4 rounded-2xl border border-dashed border-black/10 px-6 py-16 text-center dark:border-white/10">
-            <p className="max-w-md text-foreground/70">{t("noPackages")}</p>
-            <WhatsAppButton />
-          </div>
-        ) : (
-          <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {destination.packages.map((pkg) => (
-              <PackageCard key={pkg.slug} pkg={pkg} />
-            ))}
+      {/* ───── Content ───── */}
+      <section className="container-page py-16 sm:py-24">
+        {destination.description && (
+          <div className="mx-auto max-w-3xl">
+            <p className="prose-content text-lg text-muted">
+              {destination.description}
+            </p>
           </div>
         )}
+
+        <div className="mx-auto mt-16 max-w-5xl">
+          <h2 className="font-display text-3xl leading-display tracking-tight">
+            {t("availablePackages")}
+          </h2>
+
+          {destination.packages.length === 0 ? (
+            <div className="mt-8 px-6 py-16 text-center">
+              <p className="text-muted">{t("noPackages")}</p>
+            </div>
+          ) : (
+            <div className="mt-8 grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
+              {destination.packages.map((pkg) => (
+                <PackageCard key={pkg.slug} pkg={pkg} />
+              ))}
+            </div>
+          )}
+        </div>
       </section>
     </PublicLayout>
   );

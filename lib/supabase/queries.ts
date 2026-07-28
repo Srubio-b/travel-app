@@ -37,6 +37,7 @@ export type PackageCardData = {
 
 export type ListPackagesOptions = {
   tipo?: "nacional" | "internacional";
+  limit?: number;
 };
 
 type ListPackagesRow = {
@@ -83,13 +84,18 @@ export async function listPackages(
     .eq("is_active", true)
     .not("published_at", "is", null)
     .lte("published_at", new Date().toISOString())
-    .is("deleted_at", null)
-    .order("created_at", { ascending: false });
+    .is("deleted_at", null);
 
   if (options?.tipo === "nacional") {
     query = query.eq("is_national", true);
   } else if (options?.tipo === "internacional") {
     query = query.eq("is_national", false);
+  }
+
+  query = query.order("created_at", { ascending: false });
+
+  if (options?.limit) {
+    query = query.limit(options.limit);
   }
 
   const { data, error } = await query;

@@ -2,27 +2,52 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { LocaleSwitcher } from "@/components/layout/LocaleSwitcher";
+import { MobileMenu } from "@/components/layout/MobileMenu";
+import { Logo } from "@/components/shared/Logo";
+import { UserMenu } from "@/components/layout/UserMenu";
 
 export async function Header() {
   const t = await getTranslations("nav");
 
   return (
-    <header className="sticky top-0 z-40 border-b border-black/10 bg-[var(--background)]/90 backdrop-blur dark:border-white/10">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-        <Link href="/" className="text-lg font-semibold text-primary">
-          L&amp;A Viajes y Aventuras
-        </Link>
+    <header className="sticky top-0 z-40 border-b border-border bg-bg/90 backdrop-blur-sm">
+      <div className="container-page flex h-16 items-center justify-between">
+        <Logo />
 
-        <nav aria-label="Main navigation" className="hidden gap-6 text-sm font-medium sm:flex">
-          <Link href="/">{t("home")}</Link>
-          <Link href="/paquetes">{t("packages")}</Link>
-          <Link href="/destinos">{t("destinations")}</Link>
+        {/* Desktop nav */}
+        <nav
+          aria-label="Main navigation"
+          className="hidden items-center gap-8 text-sm font-medium sm:flex"
+        >
+          <Link
+            href="/"
+            className="transition-colors hover:text-primary"
+          >
+            {t("home")}
+          </Link>
+          <Link
+            href="/paquetes"
+            className="transition-colors hover:text-primary"
+          >
+            {t("packages")}
+          </Link>
+          <Link
+            href="/destinos"
+            className="transition-colors hover:text-primary"
+          >
+            {t("destinations")}
+          </Link>
         </nav>
 
-        <div className="flex items-center gap-3">
+        {/* Right side */}
+        <div className="hidden items-center gap-4 sm:flex">
+          <UserMenu />
           <LocaleSwitcher />
           <ThemeToggle />
         </div>
+
+        {/* Mobile hamburger */}
+        <MobileMenu />
       </div>
     </header>
   );

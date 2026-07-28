@@ -1,0 +1,42 @@
+# OpenSpec Config — travel-app (L&A Viajes y Aventuras)
+# Generated: 2026-07-27 via sdd-init
+
+context: >
+  L&A Viajes y Aventuras (travel-app) — Next.js 16 App Router + TypeScript strict,
+  Supabase Auth + PostgreSQL (@supabase/ssr), Tailwind CSS v4, next-intl i18n.
+  Clean Architecture: domain/, application/, infrastructure/.
+  Tour agency catalog, admin CRUD panel, client travel history.
+  WhatsApp contact only (no payments, no checkout).
+  SEO-first (sitemap, robots, metadata, schema.org).
+  Mobile-first responsive design, RLS for data separation.
+  Supabase project: yqrqebfflyhqmonjaiwg.
+
+strict_tdd: false
+# Reason: no test runner configured (no vitest, jest, playwright, etc.)
+
+testing:
+  runner: null
+  layers:
+    unit: false
+    integration: false
+    e2e: false
+  coverage: false
+  quality:
+    linter: eslint (eslint-config-next/core-web-vitals + typescript)
+    type_checker: typescript --strict (strict: true in tsconfig.json)
+    formatter: null
+
+phases:
+  proposal: openspec.md
+  spec: delta-spec.md
+  design: design-approach.md
+  tasks: tasks-*.md
+  apply: implemented
+  verify: verification.md
+  archive: archive/
+
+# Session defaults (from preflight)
+ritmo: auto
+artifacts: both
+prs: ask-on-risk
+review_limit: 800

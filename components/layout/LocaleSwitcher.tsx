@@ -6,8 +6,8 @@ import { usePathname, useRouter } from "@/lib/i18n/navigation";
 import { routing, type Locale } from "@/lib/i18n/routing";
 
 /**
- * Client-side locale toggle. Preserves the current pathname and query
- * params when switching locale, per spec requirement.
+ * Minimal locale toggle using text links instead of a <select>.
+ * Preserves the current pathname and query params when switching locale.
  */
 export function LocaleSwitcher() {
   const t = useTranslations("localeSwitcher");
@@ -16,29 +16,29 @@ export function LocaleSwitcher() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  function handleChange(event: React.ChangeEvent<HTMLSelectElement>) {
-    const nextLocale = event.target.value as Locale;
+  function handleChange(nextLocale: Locale) {
     const query = searchParams.toString();
     const href = query ? `${pathname}?${query}` : pathname;
-
     router.replace(href, { locale: nextLocale });
   }
 
   return (
-    <label className="inline-flex items-center gap-1 text-xs uppercase text-foreground/60">
-      <span className="sr-only">{t("label")}</span>
-      <select
-        value={locale}
-        onChange={handleChange}
-        aria-label={t("label")}
-        className="min-h-[44px] rounded-md border border-transparent bg-transparent px-1 text-xs uppercase text-foreground/60 hover:border-black/10 dark:hover:border-white/10"
-      >
-        {routing.locales.map((availableLocale) => (
-          <option key={availableLocale} value={availableLocale}>
-            {t(availableLocale)}
-          </option>
-        ))}
-      </select>
-    </label>
+    <span className="inline-flex items-center gap-1.5 text-xs font-medium tracking-wider">
+      {routing.locales.map((l, i) => (
+        <span key={l}>
+          {i > 0 && <span className="text-border">/</span>}
+          <button
+            type="button"
+            onClick={() => handleChange(l as Locale)}
+            aria-label={t("label")}
+            className={`transition-colors hover:text-fg ${
+              locale === l ? "text-fg" : "text-muted"
+            }`}
+          >
+            {l.toUpperCase()}
+          </button>
+        </span>
+      ))}
+    </span>
   );
 }

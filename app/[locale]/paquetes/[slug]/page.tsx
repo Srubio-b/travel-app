@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getPackageBySlug } from "@/lib/supabase/queries";
 import { SITE_URL } from "@/lib/config/site";
 import { formatCOP } from "@/lib/format/currency";
+import { FALLBACK_IMAGES } from "@/lib/config/images";
 
 export const revalidate = 300;
 
@@ -23,9 +24,7 @@ export async function generateMetadata({
   const supabase = await createClient();
   const pkg = await getPackageBySlug(supabase, slug);
 
-  if (!pkg) {
-    return {};
-  }
+  if (!pkg) return {};
 
   const url = `${SITE_URL}/${locale}/paquetes/${slug}`;
   const description = pkg.description.slice(0, 160);
@@ -48,20 +47,20 @@ export default async function PackageDetailPage({
   params,
 }: PackageDetailPageProps) {
   const { slug } = await params;
-  const [t, tCatalog, tCommon, supabase] = await Promise.all([
+  const [t, tCatalog, supabase] = await Promise.all([
     getTranslations("package"),
     getTranslations("catalog"),
-    getTranslations("common"),
     createClient(),
   ]);
 
   const pkg = await getPackageBySlug(supabase, slug);
 
-  if (!pkg) {
-    notFound();
-  }
+  if (!pkg) notFound();
 
   const primaryImage = pkg.images.find((img) => img.isPrimary) ?? pkg.images[0];
+  const otherImages = pkg.images.filter(
+    (img) => img.url !== primaryImage?.url,
+  );
 
   const productSchema = {
     "@context": "https://schema.org",
@@ -81,111 +80,120 @@ export default async function PackageDetailPage({
     <PublicLayout>
       <SchemaScript schema={productSchema} />
 
-      <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-        <div className="grid gap-6 sm:grid-cols-2">
-          <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-surface dark:bg-surface-dark">
-            {primaryImage ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={primaryImage.url}
-                alt={primaryImage.altText ?? pkg.title}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div
-                className="flex h-full w-full items-center justify-center text-5xl"
-                aria-hidden="true"
-              >
-                🏝️
-              </div>
-            )}
-          </div>
-
-          {pkg.images.length > 1 ? (
-            <div
-              className="grid grid-cols-3 gap-2 sm:grid-cols-2"
-              aria-label={t("gallery")}
-            >
-              {pkg.images.map((img) => (
-                <div
-                  key={img.url}
-                  className="aspect-square overflow-hidden rounded-xl bg-surface dark:bg-surface-dark"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={img.url}
-                    alt={img.altText ?? pkg.title}
-                    loading="lazy"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          ) : null}
+      {/* ───── Hero image ───── */}
+      <section className="container-page pt-8 sm:pt-12">
+        <div className="aspect-[16/9] w-full overflow-hidden rounded-sm bg-surface sm:aspect-[21/9]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={primaryImage?.url ?? FALLBACK_IMAGES.destinationHero}
+            alt={primaryImage?.altText ?? pkg.title}
+            className="h-full w-full object-cover"
+          />
         </div>
 
-        <div className="mt-8 flex flex-col gap-6 sm:flex-row sm:justify-between">
-          <div className="max-w-2xl">
-            <h1 className="text-3xl font-bold tracking-tight">{pkg.title}</h1>
-            <p className="mt-4 whitespace-pre-line text-foreground/80">
-              {pkg.description}
-            </p>
-
-            {pkg.destinations.length > 0 ? (
-              <div className="mt-6">
-                <h2 className="text-lg font-semibold">
-                  {t("destinationsIncluded")}
-                </h2>
-                <ul className="mt-2 flex flex-wrap gap-2">
-                  {pkg.destinations.map((d) => (
-                    <li key={d.slug}>
-                      <Link
-                        href={`/destinos/${d.slug}`}
-                        className="inline-flex items-center rounded-full border border-primary px-3 py-1 text-sm text-primary transition-colors hover:bg-primary/10"
-                      >
-                        {d.name}, {d.country}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+        {/* Gallery */}
+        {otherImages.length > 0 && (
+          <div
+            className="mt-2 grid grid-cols-4 gap-2 sm:grid-cols-5"
+            aria-label={t("gallery")}
+          >
+            {otherImages.map((img) => (
+              <div
+                key={img.url}
+                className="aspect-square overflow-hidden rounded-sm bg-surface"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={img.url}
+                  alt={img.altText ?? pkg.title}
+                  loading="lazy"
+                  className="h-full w-full object-cover"
+                />
               </div>
-            ) : null}
+            ))}
+          </div>
+        )}
+      </section>
 
-            {pkg.whatIncludes ? (
-              <div className="mt-6">
-                <h2 className="text-lg font-semibold">{t("includes")}</h2>
-                <p className="mt-2 whitespace-pre-line text-foreground/80">
-                  {pkg.whatIncludes}
-                </p>
-              </div>
-            ) : null}
+      {/* ───── Content ───── */}
+      <section className="container-page py-12 sm:py-16">
+        <div className="mx-auto grid max-w-5xl gap-12 lg:grid-cols-3">
+          {/* Main content */}
+          <div className="lg:col-span-2 lg:pr-8">
+            <h1 className="font-display text-4xl leading-display tracking-tight sm:text-5xl">
+              {pkg.title}
+            </h1>
 
-            {pkg.whatExcludes ? (
-              <div className="mt-6">
-                <h2 className="text-lg font-semibold">{t("excludes")}</h2>
-                <p className="mt-2 whitespace-pre-line text-foreground/80">
-                  {pkg.whatExcludes}
-                </p>
-              </div>
-            ) : null}
+            <div className="mt-8 space-y-8">
+              <p className="prose-content text-muted">{pkg.description}</p>
+
+              {pkg.whatIncludes && (
+                <section>
+                  <h2 className="text-sm font-medium uppercase tracking-widest text-fg">
+                    {t("includes")}
+                  </h2>
+                  <p className="prose-content mt-3 text-muted">
+                    {pkg.whatIncludes}
+                  </p>
+                </section>
+              )}
+
+              {pkg.whatExcludes && (
+                <section>
+                  <h2 className="text-sm font-medium uppercase tracking-widest text-fg">
+                    {t("excludes")}
+                  </h2>
+                  <p className="prose-content mt-3 text-muted">
+                    {pkg.whatExcludes}
+                  </p>
+                </section>
+              )}
+
+              {pkg.destinations.length > 0 && (
+                <section>
+                  <h2 className="text-sm font-medium uppercase tracking-widest text-fg">
+                    {t("destinationsIncluded")}
+                  </h2>
+                  <ul className="mt-3 flex flex-wrap gap-2">
+                    {pkg.destinations.map((d) => (
+                      <li key={d.slug}>
+                        <Link
+                          href={`/destinos/${d.slug}`}
+                          className="inline-block rounded-sm border border-border px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:border-fg hover:text-fg"
+                        >
+                          {d.name}, {d.country}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+            </div>
           </div>
 
-          <div className="flex flex-col items-start gap-3 sm:items-end">
-            <span className="inline-flex items-center rounded-full bg-primary px-3 py-1 text-xs font-semibold text-white">
-              {pkg.isNational
-                ? tCatalog("badgeNational")
-                : tCatalog("badgeInternational")}
-            </span>
-            <p className="text-sm text-foreground/70">
-              {tCatalog("days", { count: pkg.durationDays })}
-            </p>
-            <p className="text-2xl font-bold text-primary">
-              {formatCOP(pkg.price)}
-            </p>
-            <WhatsAppButton
-              message={tCommon("whatsappPackageInquiry", { title: pkg.title })}
-            />
-          </div>
+          {/* Sidebar */}
+          <aside className="lg:sticky lg:top-24 lg:self-start">
+            <div className="space-y-6 rounded-sm border border-border p-6">
+              <div className="space-y-3">
+                <span className="inline-block rounded-sm bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">
+                  {pkg.isNational
+                    ? tCatalog("badgeNational")
+                    : tCatalog("badgeInternational")}
+                </span>
+                <p className="text-sm text-muted">
+                  {tCatalog("days", { count: pkg.durationDays })}
+                </p>
+              </div>
+
+              <p className="font-display text-3xl leading-display tracking-tight">
+                {formatCOP(pkg.price)}
+              </p>
+
+              <WhatsAppButton
+                message={`¡Hola! Quiero información sobre ${pkg.title}.`}
+              />
+            </div>
+          </aside>
         </div>
       </section>
     </PublicLayout>

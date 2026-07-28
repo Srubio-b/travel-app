@@ -78,6 +78,8 @@ export type Database = {
           id: string
           image_url: string | null
           is_active: boolean
+          meta_description: string | null
+          meta_title: string | null
           name: string
           region: string | null
           slug: string
@@ -91,6 +93,8 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean
+          meta_description?: string | null
+          meta_title?: string | null
           name: string
           region?: string | null
           slug: string
@@ -104,6 +108,8 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean
+          meta_description?: string | null
+          meta_title?: string | null
           name?: string
           region?: string | null
           slug?: string

@@ -6,9 +6,10 @@ type WhatsAppButtonProps = {
 };
 
 /**
- * Renders a WhatsApp CTA link. When `floating` is true, it renders as a
- * fixed-position round button visible on every page. Returns null when
+ * Renders a WhatsApp CTA link. When `floating` is true, renders as a
+ * fixed-position link on every page. Returns a disabled fallback when
  * NEXT_PUBLIC_WHATSAPP_NUMBER is not configured.
+ * No icons or emojis — minimal text-only approach.
  */
 export async function WhatsAppButton({
   message,
@@ -18,30 +19,11 @@ export async function WhatsAppButton({
   const t = await getTranslations("common");
 
   if (!number) {
-    console.error(
-      "WhatsAppButton: NEXT_PUBLIC_WHATSAPP_NUMBER is not configured. " +
-        "This is the sole conversion path for the site and must be set.",
-    );
-
-    const fallbackHref = process.env.NEXT_PUBLIC_CONTACT_EMAIL
-      ? `mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}`
-      : undefined;
-
-    const className = floating
-      ? "fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-neutral-400 text-2xl text-white shadow-lg cursor-not-allowed"
-      : "inline-flex items-center justify-center rounded-full bg-neutral-400 px-5 py-2.5 text-sm font-medium text-white cursor-not-allowed";
-
-    if (fallbackHref) {
-      return (
-        <a href={fallbackHref} className={className} aria-label={t("contactUs")}>
-          {floating ? "✉️" : t("contactUs")}
-        </a>
-      );
-    }
+    if (floating) return null;
 
     return (
-      <span className={className} aria-disabled="true">
-        {floating ? "✉️" : t("contactUs")}
+      <span className="inline-block rounded-sm border border-border px-5 py-2.5 text-sm text-muted">
+        {t("contactUs")}
       </span>
     );
   }
@@ -55,10 +37,9 @@ export async function WhatsAppButton({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={t("whatsappCta")}
-        className="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-2xl text-white shadow-lg transition-transform hover:scale-105"
+        className="fixed bottom-6 right-6 z-50 rounded-sm bg-primary px-5 py-3 text-xs font-medium uppercase tracking-widest text-white shadow-lg transition-all hover:bg-primary/90"
       >
-        💬
+        {t("whatsappCta")}
       </a>
     );
   }
@@ -68,7 +49,7 @@ export async function WhatsAppButton({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center justify-center rounded-full bg-[#25D366] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#1ebe57]"
+      className="inline-block rounded-sm border border-primary px-5 py-2.5 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-white"
     >
       {t("whatsappCta")}
     </a>

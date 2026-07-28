@@ -3,7 +3,11 @@
     "home": "Inicio",
     "packages": "Paquetes",
     "destinations": "Destinos",
-    "contact": "Contacto"
+    "contact": "Contacto",
+    "login": "Iniciar sesión",
+    "myAccount": "Mi cuenta",
+    "admin": "Admin",
+    "logout": "Cerrar sesión"
   },
   "footer": {
     "tagline": "Tu próxima aventura empieza aquí.",
@@ -24,6 +28,8 @@
     "heroTitle": "Viví experiencias inolvidables",
     "heroSubtitle": "Planes turísticos nacionales e internacionales pensados para vos.",
     "heroCta": "Ver paquetes",
+    "featuredTitle": "Paquetes destacados",
+    "featuredSubtitle": "Experiencias seleccionadas para vos.",
     "agencyTitle": "Sobre L&A Viajes y Aventuras",
     "agencyBody": "Somos una agencia de turismo dedicada a diseñar experiencias de viaje memorables, con atención personalizada y planes a la medida de cada viajero."
   },
@@ -67,5 +73,149 @@
   "destination": {
     "availablePackages": "Paquetes disponibles",
     "noPackages": "Todavía no hay paquetes activos para este destino."
+  },
+  "auth": {
+    "login": {
+      "title": "Iniciar sesión",
+      "emailLabel": "Email",
+      "passwordLabel": "Contraseña",
+      "submit": "Iniciar sesión",
+      "noAccount": "¿No tenés cuenta?",
+      "registerLink": "Registrate"
+    },
+    "register": {
+      "title": "Crear cuenta",
+      "fullNameLabel": "Nombre completo",
+      "emailLabel": "Email",
+      "passwordLabel": "Contraseña",
+      "submit": "Registrarse",
+      "hasAccount": "¿Ya tenés cuenta?",
+      "loginLink": "Iniciá sesión",
+      "confirmationMessage": "Revisá tu email para confirmar la cuenta.",
+      "passwordError": "La contraseña debe tener al menos 6 caracteres."
+    }
+  },
+  "profile": {
+    "title": "Mi Perfil",
+    "fullNameLabel": "Nombre completo",
+    "emailLabel": "Email",
+    "phoneLabel": "Teléfono",
+    "avatarLabel": "Avatar",
+    "save": "Guardar cambios",
+    "saved": "Perfil actualizado",
+    "avatarChange": "Cambiar foto",
+    "avatarRemove": "Eliminar foto",
+    "phoneError": "Formato de teléfono inválido.",
+    "avatarTypeError": "Formato no soportado. Usá PNG, JPEG, WebP o GIF.",
+    "avatarSizeError": "La imagen es muy grande. Máximo 2 MB."
+  },
+  "admin": {
+    "title": "Panel de administración",
+    "sidebar": {
+      "destinations": "Destinos",
+      "packages": "Paquetes",
+      "plans": "Planes"
+    },
+    "destinos": {
+      "title": "Destinos",
+      "create": "Crear destino",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "confirmDeleteTitle": "Eliminar destino",
+      "confirmDeleteMessage": "¿Estás seguro? Se ocultará del panel pero los datos se conservarán.",
+      "confirmLabel": "Eliminar",
+      "cancelLabel": "Cancelar",
+      "search": "Buscar destinos...",
+      "noResults": "No se encontraron destinos.",
+      "columnName": "Nombre",
+      "columnCountry": "País",
+      "columnRegion": "Región",
+      "columnActive": "Activo",
+      "yes": "Sí",
+      "no": "No",
+      "form": {
+        "name": "Nombre",
+        "slug": "Slug",
+        "slugHelper": "Se genera automáticamente desde el nombre. Podés editarlo manualmente.",
+        "description": "Descripción",
+        "country": "País",
+        "region": "Región",
+        "image": "Imagen",
+        "isActive": "Activo",
+        "metaTitle": "Meta título (SEO)",
+        "metaDescription": "Meta descripción (SEO)",
+        "save": "Guardar",
+        "saveChanges": "Guardar cambios",
+        "cancel": "Cancelar",
+        "upload": "Subir imagen",
+        "change": "Cambiar imagen",
+        "remove": "Eliminar imagen",
+        "uploading": "Subiendo..."
+      },
+      "errors": {
+        "duplicateSlug": "Ya existe otro destino con ese slug.",
+        "imageTooLarge": "La imagen es muy grande. Máximo 5 MB."
+      }
+    },
+    "paquetes": {
+      "title": "Paquetes",
+      "create": "Crear paquete",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "confirmDeleteTitle": "Eliminar paquete",
+      "confirmDeleteMessage": "¿Estás seguro? Se ocultará del panel pero los datos se conservarán.",
+      "confirmDelete": "Eliminar",
+      "cancel": "Cancelar",
+      "search": "Buscar paquetes...",
+      "noResults": "No se encontraron paquetes.",
+      "columnName": "Nombre",
+      "columnType": "Tipo",
+      "columnPrice": "Precio",
+      "columnDuration": "Duración",
+      "columnStatus": "Estado",
+      "badge": {
+        "draft": "Borrador",
+        "published": "Publicado",
+        "national": "Nacional",
+        "international": "Internacional"
+      },
+      "actions": {
+        "publish": "Publicar",
+        "unpublish": "Despublicar"
+      },
+      "form": {
+        "title": "Título",
+        "slug": "Slug",
+        "slugHelper": "Se genera automáticamente desde el título. Podés editarlo manualmente.",
+        "description": "Descripción",
+        "includes": "Qué incluye",
+        "excludes": "Qué no incluye",
+        "price": "Precio",
+        "duration": "Duración (días)",
+        "isNational": "Nacional",
+        "isActive": "Activo",
+        "publishNow": "Publicar ahora",
+        "destinations": "Destinos",
+        "destinosSearch": "Buscar destinos...",
+        "destinosCount": "{count} seleccionados",
+        "destinosEmpty": "No se encontraron destinos.",
+        "images": "Galería de imágenes",
+        "imagesCount": "{count} imágenes · La primera es la imagen principal",
+        "imagePrimary": "Principal",
+        "imageAlt": "Imagen {n}",
+        "save": "Guardar",
+        "saveChanges": "Guardar cambios",
+        "cancel": "Cancelar",
+        "upload": "Subir imagen",
+        "change": "Cambiar imagen",
+        "remove": "Eliminar imagen",
+        "uploading": "Subiendo..."
+      },
+      "errors": {
+        "duplicateSlug": "Ya existe otro paquete con ese slug.",
+        "noDestinations": "Seleccioná al menos un destino.",
+        "maxImages": "Máximo 10 imágenes por paquete."
+      }
+    }
   }
 }

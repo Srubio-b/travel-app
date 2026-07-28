@@ -1,83 +1,114 @@
 import { getTranslations } from "next-intl/server";
 import { PublicLayout } from "@/components/layout/PublicLayout";
-import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
 import { createClient } from "@/lib/supabase/server";
+import { listPackages } from "@/lib/supabase/queries";
 import { Link } from "@/lib/i18n/navigation";
+import { FALLBACK_IMAGES } from "@/lib/config/images";
 
-async function getFeaturedPackage() {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("travel_packages")
-    .select("title, slug, package_images(url, alt_text, is_primary)")
-    .eq("is_active", true)
-    .not("published_at", "is", null)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (error) {
-    console.error("Failed to fetch featured package:", error);
+async function getFeaturedPackages() {
+  try {
+    const supabase = await createClient();
+    return await listPackages(supabase, { limit: 3 });
+  } catch {
+    return [];
   }
-
-  if (!data) return null;
-
-  const images = (data.package_images ?? []) as {
-    url: string;
-    alt_text: string | null;
-    is_primary: boolean;
-  }[];
-  const primary = images.find((img) => img.is_primary) ?? images[0] ?? null;
-
-  const imageUrl = primary
-    ? supabase.storage.from("package-images").getPublicUrl(primary.url).data
-        .publicUrl
-    : null;
-
-  return {
-    title: data.title as string,
-    slug: data.slug as string,
-    imageUrl,
-    imageAlt: primary?.alt_text ?? (data.title as string),
-  };
 }
 
 export default async function HomePage() {
-  const [t, featured] = await Promise.all([
+  const [t, featuredPackages] = await Promise.all([
     getTranslations("home"),
-    getFeaturedPackage(),
+    getFeaturedPackages(),
   ]);
 
   return (
     <PublicLayout>
-      <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-surface dark:bg-surface-dark">
-        {featured?.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={featured.imageUrl}
-            alt={featured.imageAlt}
-            className="absolute inset-0 h-full w-full object-cover opacity-60"
-          />
-        ) : null}
-        <div className="relative z-10 mx-auto max-w-2xl px-6 text-center">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+      {/* ───── Hero ───── */}
+      <section className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
+        {/* Fallback background image — reemplazar con foto real del destino destacado */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={FALLBACK_IMAGES.hero}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/60 to-bg/40" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
+
+        <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
+          <h1 className="font-display text-balance text-5xl leading-display tracking-tight sm:text-6xl lg:text-7xl">
             {t("heroTitle")}
           </h1>
-          <p className="mt-4 text-lg text-foreground/80">{t("heroSubtitle")}</p>
-          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <p className="mx-auto mt-6 max-w-2xl text-balance text-lg text-muted sm:text-xl">
+            {t("heroSubtitle")}
+          </p>
+          <div className="mt-10">
             <Link
               href="/paquetes"
-              className="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-dark"
+              className="inline-block rounded-sm border border-primary px-8 py-3 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-white"
             >
               {t("heroCta")}
             </Link>
-            <WhatsAppButton />
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-4xl px-6 py-16 text-center">
-        <h2 className="text-2xl font-semibold">{t("agencyTitle")}</h2>
-        <p className="mt-4 text-foreground/80">{t("agencyBody")}</p>
+      {/* ───── Featured packages ───── */}
+      {featuredPackages.length > 0 && (
+        <section className="container-page pb-24">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="font-display text-3xl leading-display tracking-tight sm:text-4xl">
+              {t("featuredTitle")}
+            </h2>
+            <p className="mt-4 text-muted">{t("featuredSubtitle")}</p>
+          </div>
+
+          <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {featuredPackages.map((pkg) => (
+              <Link
+                key={pkg.id}
+                href={`/paquetes/${pkg.slug}`}
+                className="group block"
+              >
+                <article>
+                  <div className="aspect-[4/5] w-full overflow-hidden rounded-sm bg-surface">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={pkg.primaryImage?.url ?? FALLBACK_IMAGES.card}
+                      alt={pkg.primaryImage?.altText ?? pkg.title}
+                      className="h-full w-full object-cover transition-all duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="mt-4 space-y-1">
+                    <h3 className="font-display text-xl leading-display tracking-tight">
+                      {pkg.title}
+                    </h3>
+                    <p className="text-sm text-muted">
+                      {pkg.durationDays} días
+                      {pkg.isNational !== null &&
+                        ` · ${pkg.isNational ? "Nacional" : "Internacional"}`}
+                    </p>
+                  </div>
+                </article>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ───── About ───── */}
+      <section className="border-t border-border">
+        <div className="container-page py-24">
+          <div className="mx-auto grid max-w-4xl gap-12 sm:grid-cols-2 sm:gap-16">
+            <div>
+              <h2 className="font-display text-3xl leading-display tracking-tight sm:text-4xl">
+                {t("agencyTitle")}
+              </h2>
+            </div>
+            <div className="space-y-4">
+              <p className="prose-content text-muted">{t("agencyBody")}</p>
+            </div>
+          </div>
+        </div>
       </section>
     </PublicLayout>
   );
