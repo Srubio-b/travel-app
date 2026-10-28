@@ -1,0 +1,10 @@
+node_modules/
+.next/
+out/
+build/
+coverage/
+pnpm-lock.yaml
+skills-lock.json
+openspec/
+public/*.svg
+*.min.js
