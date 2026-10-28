@@ -139,9 +139,19 @@ export async function createAlgo(formData: FormData) {
 
 | PR | Branch | Estado |
 |---|---|---|
-| [#1](https://github.com/Srubio-b/travel-app/pull/1) feat/admin-infra | `feat/admin-infra` → `master` | Abierto |
-| [#2](https://github.com/Srubio-b/travel-app/pull/2) feat/admin-destinos | `feat/admin-destinos` → `feat/admin-infra` | Abierto |
-| [#3](https://github.com/Srubio-b/travel-app/pull/3) feat/admin-paquetes | `feat/admin-paquetes` → `feat/admin-destinos` | Abierto |
+| [#1](https://github.com/Srubio-b/travel-app/pull/1) feat/admin-infra | `feat/admin-infra` → `master` | Mergeado en `master` |
+| [#2](https://github.com/Srubio-b/travel-app/pull/2) feat/admin-destinos | `feat/admin-destinos` → `feat/admin-infra` | Cerrado; contenido ya integrado en `master` |
+| [#3](https://github.com/Srubio-b/travel-app/pull/3) feat/admin-paquetes | `feat/admin-paquetes` → `feat/admin-destinos` | Cerrado; contenido ya integrado en `master` |
+
+## Comandos de verificación
+
+| Comando | Uso |
+|---|---|
+| `pnpm lint` | ESLint (debe quedar en 0 errores) |
+| `pnpm typecheck` | `tsc --noEmit` |
+| `pnpm build` | Build de producción |
+| `pnpm format` / `pnpm format:check` | Prettier |
+
 
 ## Notas para Agentes de IA
 
