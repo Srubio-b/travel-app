@@ -455,6 +455,93 @@ export async function listDestinations(
   }));
 }
 
+export type ClientTripWithPackage = {
+  id: string;
+  bookingDate: string;
+  tripStart: string;
+  tripEnd: string | null;
+  status: "upcoming" | "completed" | "cancelled";
+  notes: string | null;
+  packageTitle: string;
+  packageSlug: string;
+  price: number;
+  durationDays: number;
+  isNational: boolean;
+  primaryImageUrl: string | null;
+};
+
+type ClientTripRow = {
+  id: string;
+  booking_date: string;
+  trip_start: string;
+  trip_end: string | null;
+  status: string;
+  notes: string | null;
+  travel_packages: {
+    title: string;
+    slug: string;
+    price: number;
+    duration_days: number;
+    is_national: boolean;
+    package_images: { url: string; is_primary: boolean }[];
+  } | null;
+};
+
+/**
+ * Lists all trips for the currently authenticated client,
+ * ordered by trip start date descending.
+ */
+export async function listClientTrips(
+  supabase: SupabaseClient<Database>,
+  clientId: string,
+): Promise<ClientTripWithPackage[]> {
+  const { data, error } = await supabase
+    .from("client_trips")
+    .select(
+      `
+      id, booking_date, trip_start, trip_end, status, notes,
+      travel_packages (
+        title, slug, price, duration_days, is_national,
+        package_images (url, is_primary)
+      )
+    `,
+    )
+    .eq("client_id", clientId)
+    .is("deleted_at", null)
+    .order("trip_start", { ascending: false });
+
+  if (error) {
+    console.error("listClientTrips: failed to fetch trips:", error);
+    return [];
+  }
+
+  const rows = (data ?? []) as unknown as ClientTripRow[];
+
+  return rows.map((row) => {
+    const pkg = row.travel_packages;
+    const images = pkg?.package_images ?? [];
+    const primary = images.find((img) => img.is_primary) ?? images[0] ?? null;
+
+    return {
+      id: row.id,
+      bookingDate: row.booking_date,
+      tripStart: row.trip_start,
+      tripEnd: row.trip_end,
+      status: row.status as ClientTripWithPackage["status"],
+      notes: row.notes,
+      packageTitle: pkg?.title ?? "(package removed)",
+      packageSlug: pkg?.slug ?? "",
+      price: pkg?.price ?? 0,
+      durationDays: pkg?.duration_days ?? 0,
+      isNational: pkg?.is_national ?? false,
+      primaryImageUrl: primary
+        ? supabase.storage.from("package-images").getPublicUrl(primary.url).data
+            .publicUrl
+        : null,
+    };
+  });
+}
+
 export async function getAllActiveSlugs(
   supabase: SupabaseClient<Database>,
 ): Promise<ActiveSlugs> {

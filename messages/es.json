@@ -109,6 +109,23 @@
     "avatarTypeError": "Formato no soportado. Usá PNG, JPEG, WebP o GIF.",
     "avatarSizeError": "La imagen es muy grande. Máximo 2 MB."
   },
+  "trips": {
+    "title": "Mis Viajes",
+    "nav": "Mis Viajes",
+    "perfilNav": "Perfil",
+    "empty": "Todavía no tenés viajes registrados.",
+    "emptyCta": "Explorá nuestros paquetes",
+    "status_upcoming": "Próximo",
+    "status_completed": "Completado",
+    "status_cancelled": "Cancelado",
+    "bookingDate": "Fecha de reserva",
+    "tripFrom": "Desde",
+    "tripTo": "Hasta",
+    "duration": "{count, plural, one {# día} other {# días}}",
+    "national": "Nacional",
+    "international": "Internacional",
+    "notes": "Notas"
+  },
   "admin": {
     "title": "Panel de administración",
     "sidebar": {

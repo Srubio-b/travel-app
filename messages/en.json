@@ -109,6 +109,23 @@
     "avatarTypeError": "Unsupported format. Use PNG, JPEG, WebP or GIF.",
     "avatarSizeError": "Image is too large. Maximum 2 MB."
   },
+  "trips": {
+    "title": "My Trips",
+    "nav": "My Trips",
+    "perfilNav": "Profile",
+    "empty": "You don't have any trips yet.",
+    "emptyCta": "Explore our packages",
+    "status_upcoming": "Upcoming",
+    "status_completed": "Completed",
+    "status_cancelled": "Cancelled",
+    "bookingDate": "Booking date",
+    "tripFrom": "From",
+    "tripTo": "To",
+    "duration": "{count, plural, one {# day} other {# days}}",
+    "national": "Domestic",
+    "international": "International",
+    "notes": "Notes"
+  },
   "admin": {
     "title": "Admin panel",
     "sidebar": {
