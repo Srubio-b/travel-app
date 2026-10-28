@@ -8,24 +8,28 @@ import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { LocaleSwitcher } from "@/components/layout/LocaleSwitcher";
 
 export function MobileMenu() {
-  const [open, setOpen] = useState(false);
+  const [openForPath, setOpenForPath] = useState<string | null>(null);
   const t = useTranslations("nav");
   const pathname = usePathname();
 
-  // Close on route change
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+  // Derived from the pathname, so navigating away closes the menu without an effect.
+  const open = openForPath === pathname;
+
+  const close = useCallback(() => setOpenForPath(null), []);
+  const toggle = useCallback(
+    () => setOpenForPath((current) => (current === pathname ? null : pathname)),
+    [pathname],
+  );
 
   // Close on Escape
   useEffect(() => {
     if (!open) return;
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") close();
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open]);
+  }, [open, close]);
 
   // Prevent body scroll when open
   useEffect(() => {
@@ -34,9 +38,6 @@ export function MobileMenu() {
       document.documentElement.style.overflow = "";
     };
   }, [open]);
-
-  const toggle = useCallback(() => setOpen((v) => !v), []);
-  const close = useCallback(() => setOpen(false), []);
 
   const links = [
     { href: "/", label: t("home") },
