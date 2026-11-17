@@ -8,6 +8,8 @@ import { createClient } from "@/lib/supabase/server";
 import { getDestinationBySlug } from "@/lib/supabase/queries";
 import { SITE_URL } from "@/lib/config/site";
 import { FALLBACK_IMAGES } from "@/lib/config/images";
+import { truncateWords } from "@/lib/utils/text";
+import { routing } from "@/lib/i18n/routing";
 
 export const revalidate = 300;
 
@@ -24,12 +26,17 @@ export async function generateMetadata({ params }: DestinationPageProps): Promis
 
   const url = `${SITE_URL}/${locale}/destinos/${slug}`;
   const description =
-    destination.description?.slice(0, 160) ?? `${destination.name}, ${destination.country}`;
+    truncateWords(destination.description, 25) || `${destination.name}, ${destination.country}`;
 
   return {
     title: `${destination.name}, ${destination.country}`,
     description,
-    alternates: { canonical: url },
+    alternates: {
+      canonical: url,
+      languages: Object.fromEntries(
+        routing.locales.map((l) => [l, `${SITE_URL}/${l}/destinos/${slug}`]),
+      ),
+    },
     openGraph: {
       title: `${destination.name}, ${destination.country}`,
       description,

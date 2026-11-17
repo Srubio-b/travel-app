@@ -183,6 +183,10 @@ export const createPaquete = withAdminAction<ActionResult>(
     }
 
     revalidatePath(`/${locale}/admin/paquetes`);
+    revalidatePath(`/${locale}/`);
+    revalidatePath(`/${locale}/paquetes`);
+    revalidatePath(`/${locale}/paquetes/${slug}`);
+    revalidatePath(`/sitemap.xml`);
     redirect(`/${locale}/admin/paquetes`);
   },
 );
@@ -369,6 +373,10 @@ export const updatePaquete = withAdminAction<ActionResult>(
     }
 
     revalidatePath(`/${locale}/admin/paquetes`);
+    revalidatePath(`/${locale}/`);
+    revalidatePath(`/${locale}/paquetes`);
+    revalidatePath(`/${locale}/paquetes/${slug}`);
+    revalidatePath(`/sitemap.xml`);
     redirect(`/${locale}/admin/paquetes`);
   },
 );
@@ -388,6 +396,12 @@ export const deletePaquete = withAdminAction<ActionResult>(
       };
     }
 
+    const { data: pkg } = await adminClient
+      .from("travel_packages")
+      .select("slug")
+      .eq("id", id)
+      .single();
+
     const { error } = await adminClient
       .from("travel_packages")
       .update({ deleted_at: new Date().toISOString() })
@@ -398,6 +412,12 @@ export const deletePaquete = withAdminAction<ActionResult>(
     }
 
     revalidatePath(`/${locale}/admin/paquetes`);
+    revalidatePath(`/${locale}/`);
+    revalidatePath(`/${locale}/paquetes`);
+    if (pkg?.slug) {
+      revalidatePath(`/${locale}/paquetes/${pkg.slug}`);
+    }
+    revalidatePath(`/sitemap.xml`);
     redirect(`/${locale}/admin/paquetes`);
   },
 );
@@ -419,7 +439,7 @@ export const togglePublish = withAdminAction<ActionResult>(
 
     const { data: pkg, error: fetchError } = await adminClient
       .from("travel_packages")
-      .select("published_at")
+      .select("slug, published_at")
       .eq("id", id)
       .single();
 
@@ -442,6 +462,12 @@ export const togglePublish = withAdminAction<ActionResult>(
     }
 
     revalidatePath(`/${locale}/admin/paquetes`);
+    revalidatePath(`/${locale}/`);
+    revalidatePath(`/${locale}/paquetes`);
+    if (pkg?.slug) {
+      revalidatePath(`/${locale}/paquetes/${pkg.slug}`);
+    }
+    revalidatePath(`/sitemap.xml`);
     return { success: true };
   },
 );

@@ -2,18 +2,31 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
+import { routing } from "@/lib/i18n/routing";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { createPublicClient } from "@/lib/supabase/public";
 import { FALLBACK_IMAGES } from "@/lib/config/images";
 import { listDestinations } from "@/lib/supabase/queries";
+import { SITE_URL } from "@/lib/config/site";
 
 export const revalidate = 300;
 
-export async function generateMetadata(): Promise<Metadata> {
+type DestinosPageProps = {
+  params: Promise<{ locale: string }>;
+};
+
+export async function generateMetadata({ params }: DestinosPageProps): Promise<Metadata> {
+  const { locale } = await params;
   const t = await getTranslations("destinations");
   return {
     title: t("title"),
     description: t("subtitle"),
+    alternates: {
+      canonical: `${SITE_URL}/${locale}/destinos`,
+      languages: Object.fromEntries(
+        routing.locales.map((l: string) => [l, `${SITE_URL}/${l}/destinos`]),
+      ),
+    },
   };
 }
 

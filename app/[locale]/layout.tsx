@@ -11,11 +11,14 @@ import "../globals.css";
 const inter = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
+  display: "swap",
+  preload: true,
 });
 
 const playfair = Playfair_Display({
   variable: "--font-display",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -25,6 +28,12 @@ export const metadata: Metadata = {
     template: "%s | L&A Viajes y Aventuras",
   },
   description: "Planes turísticos nacionales e internacionales con atención personalizada.",
+  alternates: {
+    languages: {
+      es: `${SITE_URL}/es`,
+      en: `${SITE_URL}/en`,
+    },
+  },
 };
 
 const businessSchema = {

@@ -392,8 +392,8 @@ export const getDestinationBySlug = cache(async function getDestinationBySlug(
 });
 
 export type ActiveSlugs = {
-  packages: { slug: string }[];
-  destinations: { slug: string }[];
+  packages: { slug: string; updatedAt: string }[];
+  destinations: { slug: string; updatedAt: string }[];
 };
 
 /**
@@ -406,18 +406,18 @@ export const getAllActiveSlugs = cache(async function getAllActiveSlugs(
   const [packagesResult, destinationsResult] = await Promise.all([
     supabase
       .from("travel_packages")
-      .select("slug")
+      .select("slug, updated_at")
       .eq("is_active", true)
       .not("published_at", "is", null)
       .lte("published_at", new Date().toISOString())
       .is("deleted_at", null)
-      .returns<{ slug: string }[]>(),
+      .returns<{ slug: string; updated_at: string }[]>(),
     supabase
       .from("destinations")
-      .select("slug")
+      .select("slug, updated_at")
       .eq("is_active", true)
       .is("deleted_at", null)
-      .returns<{ slug: string }[]>(),
+      .returns<{ slug: string; updated_at: string }[]>(),
   ]);
 
   if (packagesResult.error) {
@@ -439,8 +439,14 @@ export const getAllActiveSlugs = cache(async function getAllActiveSlugs(
   }
 
   return {
-    packages: packagesResult.data ?? [],
-    destinations: destinationsResult.data ?? [],
+    packages: (packagesResult.data ?? []).map((row) => ({
+      slug: row.slug,
+      updatedAt: row.updated_at,
+    })),
+    destinations: (destinationsResult.data ?? []).map((row) => ({
+      slug: row.slug,
+      updatedAt: row.updated_at,
+    })),
   };
 });
 
