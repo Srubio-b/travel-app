@@ -65,7 +65,8 @@ prompts_desarrollo_fases_actualizado.md
 historias_de_usuario.md
 
 # === DOCS LOCALES ===
-/docs/
+/docs/*
+!/docs/structure.md
 
 # === ASSETS GENERADOS / STATIC DEFAULTS ===
 public/*.svg

@@ -14,6 +14,10 @@ Plataforma web para la agencia de turismo **L&A Viajes y Aventuras**. Catálogo 
 
 ## Estructura del Proyecto
 
+Ver [`docs/structure.md`](docs/structure.md) para la descripción completa de carpetas, convenciones de naming y decisiones de estructura (incluyendo la evaluación de route groups).
+
+Resumen de alto nivel:
+
 ```
 travel-app/
 ├── app/                 # Next.js App Router (páginas y API Routes)
@@ -28,6 +32,7 @@ travel-app/
 │   ├── admin/           # Componentes del panel admin
 │   ├── catalog/         # Componentes del catálogo público
 │   └── layout/          # Layout, header, sidebar, footer
+├── docs/                # Documentación del proyecto
 ├── domain/              # Entidades y reglas de negocio
 ├── application/         # Casos de uso / servicios de aplicación
 ├── infrastructure/      # Adaptadores de infraestructura
