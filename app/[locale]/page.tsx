@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { createClient } from "@/lib/supabase/server";
@@ -28,11 +29,13 @@ export default async function HomePage() {
       {/* ───── Hero ───── */}
       <section className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
         {/* Fallback background image — reemplazar con foto real del destino destacado */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={FALLBACK_IMAGES.hero}
           alt=""
-          className="absolute inset-0 h-full w-full object-cover"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/60 to-bg/40" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
@@ -69,12 +72,13 @@ export default async function HomePage() {
             {featuredPackages.map((pkg) => (
               <Link key={pkg.id} href={`/paquetes/${pkg.slug}`} className="group block">
                 <article>
-                  <div className="aspect-[4/5] w-full overflow-hidden rounded-sm bg-surface">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                  <div className="relative aspect-[4/5] w-full overflow-hidden rounded-sm bg-surface">
+                    <Image
                       src={pkg.primaryImage?.url ?? FALLBACK_IMAGES.card}
                       alt={pkg.primaryImage?.altText ?? pkg.title}
-                      className="h-full w-full object-cover transition-all duration-500 group-hover:scale-105"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-all duration-500 group-hover:scale-105"
                     />
                   </div>
                   <div className="mt-4 space-y-1">

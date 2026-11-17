@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
@@ -50,11 +51,13 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
     <PublicLayout>
       {/* ───── Hero ───── */}
       <section className="relative flex min-h-[50vh] items-center justify-center overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={destination.imageUrl ?? FALLBACK_IMAGES.travel}
           alt={destination.name}
-          className="absolute inset-0 h-full w-full object-cover"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/30 to-transparent" />
         <div className="relative z-10 mx-auto max-w-2xl px-6 text-center">

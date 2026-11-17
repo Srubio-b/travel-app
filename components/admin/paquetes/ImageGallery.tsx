@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useActionState, useState } from "react";
 import type { UploadImageResult } from "@/app/actions/admin/paquetes";
 
@@ -64,11 +65,14 @@ export function ImageGallery({ images, onChange, uploadAction, labels }: ImageGa
       {images.length > 0 && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
           {images.map((path, i) => (
-            <div key={path} className="group relative">
-              <img
+            <div key={path} className="group relative h-28 w-full">
+              <Image
                 src={getPublicImageUrl(path)}
                 alt={labels.alt.replace("{n}", (i + 1).toString())}
-                className="h-28 w-full rounded-lg border border-border object-cover"
+                fill
+                sizes="(max-width: 768px) 50vw, 25vw"
+                loading="lazy"
+                className="rounded-lg border border-border object-cover"
               />
               {/* Primary badge */}
               {i === 0 && (
