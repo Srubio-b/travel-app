@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth/utils";
 import { updatePaquete, uploadPaqueteImage } from "@/app/actions/admin/paquetes";
 import { PaqueteFormFields } from "@/components/admin/paquetes/PaqueteFormFields";
-import type { TravelPackage, PackageImage } from "@/types";
+import type { TravelPackage } from "@/types";
 
 /* ──────────────────────────────────────────────
  * Types
