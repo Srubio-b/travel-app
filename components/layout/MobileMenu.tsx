@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useState, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { usePathname } from "@/lib/i18n/navigation";
@@ -7,7 +8,11 @@ import { Link } from "@/lib/i18n/navigation";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { LocaleSwitcher } from "@/components/layout/LocaleSwitcher";
 
-export function MobileMenu() {
+type MobileMenuProps = {
+  userMenu?: ReactNode;
+};
+
+export function MobileMenu({ userMenu }: MobileMenuProps) {
   const [openForPath, setOpenForPath] = useState<string | null>(null);
   const t = useTranslations("nav");
   const pathname = usePathname();
@@ -50,7 +55,7 @@ export function MobileMenu() {
       <button
         type="button"
         onClick={toggle}
-        aria-label="Toggle menu"
+        aria-label={t("toggleMenu")}
         aria-expanded={open}
         className="relative z-50 flex h-6 w-6 flex-col items-center justify-center gap-1 sm:hidden"
       >
@@ -84,6 +89,12 @@ export function MobileMenu() {
                 {label}
               </Link>
             ))}
+            {userMenu && (
+              <div className="flex flex-col items-center gap-4 pt-4">
+                <span className="h-px w-12 bg-border" aria-hidden="true" />
+                {userMenu}
+              </div>
+            )}
             <div className="flex items-center gap-4 pt-4">
               <LocaleSwitcher />
               <span className="text-border">|</span>

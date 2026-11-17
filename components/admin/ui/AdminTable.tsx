@@ -37,6 +37,7 @@ export type AdminTableProps<T> = {
     edit: string;
     delete: string;
     noResults: string;
+    actions: string;
   };
 };
 
@@ -89,7 +90,7 @@ export function AdminTable<T extends { id: string }>({
                 ))}
                 {(onEdit || onDelete || actions) && (
                   <th scope="col" className="px-4 py-3 text-right">
-                    <span className="sr-only">Actions</span>
+                    <span className="sr-only">{labels.actions}</span>
                   </th>
                 )}
               </tr>
@@ -119,7 +120,7 @@ export function AdminTable<T extends { id: string }>({
                           <button
                             type="button"
                             onClick={() => onDelete(row.id)}
-                            className="rounded-md px-3 py-1.5 text-sm font-medium text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950"
+                            className="rounded-md px-3 py-1.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive-subtle"
                           >
                             {labels.delete}
                           </button>

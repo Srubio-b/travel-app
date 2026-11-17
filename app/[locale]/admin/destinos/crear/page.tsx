@@ -50,6 +50,7 @@ export default async function CrearDestinoPage({ params }: Props) {
         change: ft("change"),
         remove: ft("remove"),
         uploading: ft("uploading"),
+        preview: ft("preview"),
       }}
     />
   );

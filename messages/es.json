@@ -7,7 +7,9 @@
     "login": "Iniciar sesión",
     "myAccount": "Mi cuenta",
     "admin": "Admin",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "userFallback": "Usuario",
+    "toggleMenu": "Abrir menú"
   },
   "footer": {
     "tagline": "Tu próxima aventura empieza aquí.",
@@ -101,6 +103,7 @@
     "emailLabel": "Email",
     "phoneLabel": "Teléfono",
     "avatarLabel": "Avatar",
+    "avatarAlt": "Foto de perfil",
     "save": "Guardar cambios",
     "saved": "Perfil actualizado",
     "avatarChange": "Cambiar foto",
@@ -131,6 +134,7 @@
       "columnCountry": "País",
       "columnRegion": "Región",
       "columnActive": "Activo",
+      "columnActions": "Acciones",
       "yes": "Sí",
       "no": "No",
       "form": {
@@ -150,7 +154,8 @@
         "upload": "Subir imagen",
         "change": "Cambiar imagen",
         "remove": "Eliminar imagen",
-        "uploading": "Subiendo..."
+        "uploading": "Subiendo...",
+        "preview": "Vista previa"
       },
       "errors": {
         "duplicateSlug": "Ya existe otro destino con ese slug.",
@@ -173,6 +178,7 @@
       "columnPrice": "Precio",
       "columnDuration": "Duración",
       "columnStatus": "Estado",
+      "columnActions": "Acciones",
       "badge": {
         "draft": "Borrador",
         "published": "Publicado",

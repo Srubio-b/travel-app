@@ -12,6 +12,7 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={toggleTheme}
+      aria-pressed={isDark}
       aria-label={isDark ? t("themeToggleLight") : t("themeToggleDark")}
       className="text-xs font-medium uppercase tracking-widest text-muted transition-colors hover:text-fg"
     >

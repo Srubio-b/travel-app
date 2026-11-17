@@ -71,6 +71,7 @@ export default async function DestinosPage({ params, searchParams }: Props) {
         columnCountry: t("columnCountry"),
         columnRegion: t("columnRegion"),
         columnActive: t("columnActive"),
+        columnActions: t("columnActions"),
         yes: t("yes"),
         no: t("no"),
       }}

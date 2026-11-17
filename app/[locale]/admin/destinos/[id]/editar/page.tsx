@@ -79,6 +79,7 @@ export default async function EditarDestinoPage({ params }: Props) {
         change: ft("change"),
         remove: ft("remove"),
         uploading: ft("uploading"),
+        preview: ft("preview"),
       }}
     />
   );

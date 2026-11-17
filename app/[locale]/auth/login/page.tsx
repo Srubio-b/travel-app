@@ -57,7 +57,7 @@ export default function LoginPage() {
         </div>
 
         {state?.success === false && (
-          <p className="text-sm text-red-600" role="alert">
+          <p className="text-sm text-destructive" role="alert">
             {state.error}
           </p>
         )}
