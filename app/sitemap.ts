@@ -39,6 +39,13 @@ function buildStaticEntries(): MetadataRoute.Sitemap {
       priority: 0.9,
       alternates: withAlternates("/paquetes").alternates,
     },
+    {
+      url: `${BASE_URL}/${locale}/destinos`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.8,
+      alternates: withAlternates("/destinos").alternates,
+    },
   ]);
 }
 
@@ -50,9 +57,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const { packages, destinations } = await getAllActiveSlugs(supabase);
 
     const packageEntries: MetadataRoute.Sitemap = routing.locales.flatMap((locale) =>
-      packages.map(({ slug }) => ({
+      packages.map(({ slug, updatedAt }) => ({
         url: `${BASE_URL}/${locale}/paquetes/${slug}`,
-        lastModified: new Date(),
+        lastModified: new Date(updatedAt),
         changeFrequency: "weekly" as const,
         priority: 0.8,
         alternates: withAlternates(`/paquetes/${slug}`).alternates,
@@ -60,9 +67,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     );
 
     const destinationEntries: MetadataRoute.Sitemap = routing.locales.flatMap((locale) =>
-      destinations.map(({ slug }) => ({
+      destinations.map(({ slug, updatedAt }) => ({
         url: `${BASE_URL}/${locale}/destinos/${slug}`,
-        lastModified: new Date(),
+        lastModified: new Date(updatedAt),
         changeFrequency: "weekly" as const,
         priority: 0.7,
         alternates: withAlternates(`/destinos/${slug}`).alternates,

@@ -87,6 +87,10 @@ export const createDestino = withAdminAction<ActionResult>(
     }
 
     revalidatePath(`/${locale}/admin/destinos`);
+    revalidatePath(`/${locale}/`);
+    revalidatePath(`/${locale}/destinos`);
+    revalidatePath(`/${locale}/destinos/${slug}`);
+    revalidatePath(`/sitemap.xml`);
     redirect(`/${locale}/admin/destinos`);
   },
 );
@@ -170,6 +174,10 @@ export const updateDestino = withAdminAction<ActionResult>(
     }
 
     revalidatePath(`/${locale}/admin/destinos`);
+    revalidatePath(`/${locale}/`);
+    revalidatePath(`/${locale}/destinos`);
+    revalidatePath(`/${locale}/destinos/${slug}`);
+    revalidatePath(`/sitemap.xml`);
     redirect(`/${locale}/admin/destinos`);
   },
 );
@@ -186,6 +194,12 @@ export const deleteDestino = withAdminAction<ActionResult>(
       return { success: false, error: "ID de destino no proporcionado." };
     }
 
+    const { data: dest } = await adminClient
+      .from("destinations")
+      .select("slug")
+      .eq("id", id)
+      .single();
+
     const { error } = await adminClient
       .from("destinations")
       .update({ deleted_at: new Date().toISOString() })
@@ -196,6 +210,12 @@ export const deleteDestino = withAdminAction<ActionResult>(
     }
 
     revalidatePath(`/${locale}/admin/destinos`);
+    revalidatePath(`/${locale}/`);
+    revalidatePath(`/${locale}/destinos`);
+    if (dest?.slug) {
+      revalidatePath(`/${locale}/destinos/${dest.slug}`);
+    }
+    revalidatePath(`/sitemap.xml`);
     redirect(`/${locale}/admin/destinos`);
   },
 );

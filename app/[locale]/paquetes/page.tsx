@@ -5,10 +5,13 @@ import { PackageGrid } from "@/components/catalog/PackageGrid";
 import { PackageFilter } from "@/components/catalog/PackageFilter";
 import { createClient } from "@/lib/supabase/server";
 import { listPackages, type ListPackagesOptions } from "@/lib/supabase/queries";
+import { SITE_URL } from "@/lib/config/site";
+import { routing } from "@/lib/i18n/routing";
 
 export const revalidate = 300;
 
 type PaquetesPageProps = {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<{ tipo?: string }>;
 };
 
@@ -17,11 +20,16 @@ function toTipoFilter(value: string | undefined): ListPackagesOptions["tipo"] {
   return undefined;
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: PaquetesPageProps): Promise<Metadata> {
+  const { locale } = await params;
   const t = await getTranslations("catalog");
   return {
     title: t("title"),
     description: t("subtitle"),
+    alternates: {
+      canonical: `${SITE_URL}/${locale}/paquetes`,
+      languages: Object.fromEntries(routing.locales.map((l) => [l, `${SITE_URL}/${l}/paquetes`])),
+    },
   };
 }
 

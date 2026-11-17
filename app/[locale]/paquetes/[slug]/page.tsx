@@ -11,6 +11,8 @@ import { getPackageBySlug } from "@/lib/supabase/queries";
 import { SITE_URL } from "@/lib/config/site";
 import { formatCOP } from "@/lib/format/currency";
 import { FALLBACK_IMAGES } from "@/lib/config/images";
+import { truncateWords } from "@/lib/utils/text";
+import { routing } from "@/lib/i18n/routing";
 
 export const revalidate = 300;
 
@@ -26,13 +28,18 @@ export async function generateMetadata({ params }: PackageDetailPageProps): Prom
   if (!pkg) return {};
 
   const url = `${SITE_URL}/${locale}/paquetes/${slug}`;
-  const description = pkg.description.slice(0, 160);
+  const description = truncateWords(pkg.description, 25);
   const primaryImage = pkg.images.find((img) => img.isPrimary) ?? pkg.images[0];
 
   return {
     title: pkg.title,
     description,
-    alternates: { canonical: url },
+    alternates: {
+      canonical: url,
+      languages: Object.fromEntries(
+        routing.locales.map((l) => [l, `${SITE_URL}/${l}/paquetes/${slug}`]),
+      ),
+    },
     openGraph: {
       title: pkg.title,
       description,
