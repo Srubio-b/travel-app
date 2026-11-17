@@ -12,11 +12,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
  *                 a random UUID is generated (keeping the original extension).
  * @returns The public URL of the uploaded file.
  */
-export async function uploadImage(
-  bucket: string,
-  file: File,
-  path?: string,
-): Promise<string> {
+export async function uploadImage(bucket: string, file: File, path?: string): Promise<string> {
   const supabase = createAdminClient();
 
   const fileExt = file.name.split(".").pop() ?? "jpg";

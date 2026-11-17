@@ -49,10 +49,7 @@ export function UserMenuClient({ fullName, role, avatarUrl }: UserMenuClientProp
   // Unauthenticated: show login link
   if (!role) {
     return (
-      <Link
-        href="/auth/login"
-        className="text-sm font-medium transition-colors hover:text-primary"
-      >
+      <Link href="/auth/login" className="text-sm font-medium transition-colors hover:text-primary">
         {t("login")}
       </Link>
     );
@@ -69,11 +66,7 @@ export function UserMenuClient({ fullName, role, avatarUrl }: UserMenuClientProp
       >
         {avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={avatarUrl}
-            alt=""
-            className="h-6 w-6 rounded-full object-cover"
-          />
+          <img src={avatarUrl} alt="" className="h-6 w-6 rounded-full object-cover" />
         ) : (
           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
             {fullName?.charAt(0).toUpperCase() ?? "?"}
@@ -119,7 +112,11 @@ export function UserMenuClient({ fullName, role, avatarUrl }: UserMenuClientProp
 
           <div className="border-t border-border" />
 
-          <form action={async () => { await logout(); }}>
+          <form
+            action={async () => {
+              await logout();
+            }}
+          >
             <button
               type="submit"
               className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-primary-subtle hover:text-primary"

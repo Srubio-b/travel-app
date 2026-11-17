@@ -112,9 +112,7 @@ export async function listPackages(
     const primary = images.find((img) => img.is_primary) ?? images[0] ?? null;
     const primaryImage = primary
       ? {
-          url: supabase.storage
-            .from("package-images")
-            .getPublicUrl(primary.url).data.publicUrl,
+          url: supabase.storage.from("package-images").getPublicUrl(primary.url).data.publicUrl,
           altText: primary.alt_text,
         }
       : null;
@@ -212,14 +210,8 @@ export async function getPackageBySlug(
     .maybeSingle();
 
   if (error) {
-    console.error(
-      `getPackageBySlug: failed to fetch package "${slug}" from Supabase:`,
-      error,
-    );
-    throw new SupabaseQueryError(
-      `Failed to fetch package "${slug}" from Supabase`,
-      error,
-    );
+    console.error(`getPackageBySlug: failed to fetch package "${slug}" from Supabase:`, error);
+    throw new SupabaseQueryError(`Failed to fetch package "${slug}" from Supabase`, error);
   }
 
   if (!data) return null;
@@ -230,8 +222,7 @@ export async function getPackageBySlug(
     .slice()
     .sort((a, b) => a.display_order - b.display_order)
     .map((img) => ({
-      url: supabase.storage.from("package-images").getPublicUrl(img.url).data
-        .publicUrl,
+      url: supabase.storage.from("package-images").getPublicUrl(img.url).data.publicUrl,
       altText: img.alt_text,
       isPrimary: img.is_primary,
     }));
@@ -337,10 +328,7 @@ export async function getDestinationBySlug(
       `getDestinationBySlug: failed to fetch destination "${slug}" from Supabase:`,
       error,
     );
-    throw new SupabaseQueryError(
-      `Failed to fetch destination "${slug}" from Supabase`,
-      error,
-    );
+    throw new SupabaseQueryError(`Failed to fetch destination "${slug}" from Supabase`, error);
   }
 
   if (!data) return null;
@@ -363,9 +351,7 @@ export async function getDestinationBySlug(
       const primary = images.find((img) => img.is_primary) ?? images[0] ?? null;
       const primaryImage = primary
         ? {
-            url: supabase.storage
-              .from("package-images")
-              .getPublicUrl(primary.url).data.publicUrl,
+            url: supabase.storage.from("package-images").getPublicUrl(primary.url).data.publicUrl,
             altText: primary.alt_text,
           }
         : null;
@@ -388,8 +374,7 @@ export async function getDestinationBySlug(
     region: row.region,
     description: row.description,
     imageUrl: row.image_url
-      ? supabase.storage.from("package-images").getPublicUrl(row.image_url).data
-          .publicUrl
+      ? supabase.storage.from("package-images").getPublicUrl(row.image_url).data.publicUrl
       : null,
     packages,
   };
@@ -455,9 +440,7 @@ export async function listDestinations(
   }));
 }
 
-export async function getAllActiveSlugs(
-  supabase: SupabaseClient<Database>,
-): Promise<ActiveSlugs> {
+export async function getAllActiveSlugs(supabase: SupabaseClient<Database>): Promise<ActiveSlugs> {
   const [packagesResult, destinationsResult] = await Promise.all([
     supabase
       .from("travel_packages")

@@ -13,10 +13,7 @@ export type ImageGalleryProps = {
   /** Called when the gallery list changes (add/remove/reorder) */
   onChange: (urls: string[]) => void;
   /** Server Action to upload a file to the paquetes bucket */
-  uploadAction: (
-    prev: UploadImageResult | null,
-    formData: FormData,
-  ) => Promise<UploadImageResult>;
+  uploadAction: (prev: UploadImageResult | null, formData: FormData) => Promise<UploadImageResult>;
   /** Translated labels */
   labels: {
     upload: string;
@@ -33,12 +30,7 @@ export type ImageGalleryProps = {
  * Component
  * ────────────────────────────────────────────── */
 
-export function ImageGallery({
-  images,
-  onChange,
-  uploadAction,
-  labels,
-}: ImageGalleryProps) {
+export function ImageGallery({ images, onChange, uploadAction, labels }: ImageGalleryProps) {
   const [state, formAction, isPending] = useActionState(uploadAction, null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 

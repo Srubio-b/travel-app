@@ -22,10 +22,7 @@ export type ImageUploaderProps = {
    * The Server Action signature follows the useActionState convention:
    *   (prev: UploadResult | null, formData: FormData) => Promise<UploadResult>
    */
-  action: (
-    prev: UploadResult | null,
-    formData: FormData,
-  ) => Promise<UploadResult>;
+  action: (prev: UploadResult | null, formData: FormData) => Promise<UploadResult>;
   /** Called when an upload succeeds — receives the public URL */
   onSuccess?: (url: string) => void;
   /** Translated labels forwarded from parent */
@@ -41,12 +38,7 @@ export type ImageUploaderProps = {
  * Component
  * ────────────────────────────────────────────── */
 
-export function ImageUploader({
-  initialUrl,
-  action,
-  onSuccess,
-  labels,
-}: ImageUploaderProps) {
+export function ImageUploader({ initialUrl, action, onSuccess, labels }: ImageUploaderProps) {
   const [preview, setPreview] = useState<string | null>(initialUrl ?? null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 

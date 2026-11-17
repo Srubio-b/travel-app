@@ -49,10 +49,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Protected: /[locale]/mi-cuenta/* → must be authenticated
-  if (
-    path === `/${locale}/mi-cuenta` ||
-    path.startsWith(`/${locale}/mi-cuenta/`)
-  ) {
+  if (path === `/${locale}/mi-cuenta` || path.startsWith(`/${locale}/mi-cuenta/`)) {
     if (!user) {
       const loginUrl = new URL(`/${locale}/auth/login`, request.url);
       loginUrl.searchParams.set("redirect", path);

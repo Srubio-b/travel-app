@@ -21,10 +21,7 @@ async function getLocale(): Promise<string> {
  * Login
  * ────────────────────────────────────────────── */
 
-export async function login(
-  _prev: AuthResult | null,
-  formData: FormData,
-): Promise<AuthResult> {
+export async function login(_prev: AuthResult | null, formData: FormData): Promise<AuthResult> {
   const supabase = await createClient();
 
   const email = formData.get("email") as string;
@@ -43,9 +40,7 @@ export async function login(
     return {
       success: false,
       error: mapAuthError(error),
-      field: error.message.toLowerCase().includes("email")
-        ? "email"
-        : "password",
+      field: error.message.toLowerCase().includes("email") ? "email" : "password",
     };
   }
 
@@ -65,10 +60,7 @@ export async function login(
  * Register
  * ────────────────────────────────────────────── */
 
-export async function register(
-  _prev: AuthResult | null,
-  formData: FormData,
-): Promise<AuthResult> {
+export async function register(_prev: AuthResult | null, formData: FormData): Promise<AuthResult> {
   const supabase = await createClient();
 
   const email = formData.get("email") as string;
@@ -110,9 +102,7 @@ export async function register(
     return {
       success: false,
       error: mapAuthError(error),
-      field: error.message.toLowerCase().includes("email")
-        ? "email"
-        : "password",
+      field: error.message.toLowerCase().includes("email") ? "email" : "password",
     };
   }
 
@@ -194,10 +184,7 @@ export async function updateProfile(
   if (phone) updates.phone = phone.trim();
   updates.updated_at = new Date().toISOString();
 
-  const { error } = await supabase
-    .from("profiles")
-    .update(updates)
-    .eq("id", user.id);
+  const { error } = await supabase.from("profiles").update(updates).eq("id", user.id);
 
   if (error) {
     return { success: false, error: error.message };

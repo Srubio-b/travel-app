@@ -41,9 +41,7 @@ export default async function DestinosPage({ params, searchParams }: Props) {
   // Server-side search via ILIKE
   if (q && q.trim().length > 0) {
     const term = `%${q.trim()}%`;
-    query = query.or(
-      `name.ilike.${term},country.ilike.${term},region.ilike.${term}`,
-    );
+    query = query.or(`name.ilike.${term},country.ilike.${term},region.ilike.${term}`);
   }
 
   const { data: destinations, error } = await query.returns<Destination[]>();

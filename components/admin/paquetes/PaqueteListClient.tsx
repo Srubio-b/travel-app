@@ -42,14 +42,8 @@ export type PaqueteListClientProps = {
     unpublish: string;
   };
   basePath: string;
-  deleteAction: (
-    prev: ActionResult | null,
-    formData: FormData,
-  ) => Promise<ActionResult>;
-  togglePublishAction: (
-    prev: ActionResult | null,
-    formData: FormData,
-  ) => Promise<ActionResult>;
+  deleteAction: (prev: ActionResult | null, formData: FormData) => Promise<ActionResult>;
+  togglePublishAction: (prev: ActionResult | null, formData: FormData) => Promise<ActionResult>;
 };
 
 /* ──────────────────────────────────────────────
@@ -140,18 +134,14 @@ export function PaqueteListClient({
             key: "price",
             label: labels.columnPrice,
             render: (row) => (
-              <span className="text-sm tabular-nums text-fg">
-                {formatPrice(row.price)}
-              </span>
+              <span className="text-sm tabular-nums text-fg">{formatPrice(row.price)}</span>
             ),
           },
           {
             key: "duration_days",
             label: labels.columnDuration,
             render: (row) => (
-              <span className="text-sm text-muted-foreground">
-                {row.duration_days}d
-              </span>
+              <span className="text-sm text-muted-foreground">{row.duration_days}d</span>
             ),
           },
           {
@@ -159,13 +149,9 @@ export function PaqueteListClient({
             label: labels.columnStatus,
             render: (row) =>
               row.published_at ? (
-                <span className="text-sm text-success">
-                  {labels.badgePublished}
-                </span>
+                <span className="text-sm text-success">{labels.badgePublished}</span>
               ) : (
-                <span className="text-sm text-muted-foreground">
-                  {labels.badgeDraft}
-                </span>
+                <span className="text-sm text-muted-foreground">{labels.badgeDraft}</span>
               ),
           },
         ]}

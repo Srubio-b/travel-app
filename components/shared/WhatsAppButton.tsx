@@ -11,10 +11,7 @@ type WhatsAppButtonProps = {
  * NEXT_PUBLIC_WHATSAPP_NUMBER is not configured.
  * No icons or emojis — minimal text-only approach.
  */
-export async function WhatsAppButton({
-  message,
-  floating = false,
-}: WhatsAppButtonProps) {
+export async function WhatsAppButton({ message, floating = false }: WhatsAppButtonProps) {
   const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
   const t = await getTranslations("common");
 

@@ -35,10 +35,7 @@ export type DestinoListClientProps = {
   };
   basePath: string;
   /** Server Action reference for delete */
-  deleteAction: (
-    prev: ActionResult | null,
-    formData: FormData,
-  ) => Promise<ActionResult>;
+  deleteAction: (prev: ActionResult | null, formData: FormData) => Promise<ActionResult>;
 };
 
 /* ──────────────────────────────────────────────

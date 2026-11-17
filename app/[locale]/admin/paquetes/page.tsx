@@ -19,10 +19,7 @@ type Props = {
  * Page
  * ────────────────────────────────────────────── */
 
-export default async function PaquetesPage({
-  params,
-  searchParams,
-}: Props) {
+export default async function PaquetesPage({ params, searchParams }: Props) {
   const { locale } = await params;
   const { q } = await searchParams;
 
@@ -47,9 +44,8 @@ export default async function PaquetesPage({
     query = query.or(`title.ilike.${term}`);
   }
 
-  const { data: packages, error } = await query.returns<
-    (TravelPackage & { package_destinations?: { count: number }[] })[]
-  >();
+  const { data: packages, error } =
+    await query.returns<(TravelPackage & { package_destinations?: { count: number }[] })[]>();
 
   if (error) {
     throw new Error(error.message);

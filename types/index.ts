@@ -103,7 +103,7 @@ export interface ClientTrip {
   booking_date: string; // date
   trip_start: string; // date
   trip_end: string | null; // date
-  status: 'upcoming' | 'completed' | 'cancelled';
+  status: "upcoming" | "completed" | "cancelled";
   notes: string | null;
   created_at: string;
   updated_at: string;

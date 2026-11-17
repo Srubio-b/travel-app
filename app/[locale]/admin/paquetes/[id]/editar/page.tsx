@@ -65,9 +65,7 @@ export default async function EditarPaquetePage({ params }: Props) {
     .eq("is_active", true)
     .order("name", { ascending: true });
 
-  const destinationIds = (packageDests ?? []).map(
-    (pd) => pd.destination_id,
-  );
+  const destinationIds = (packageDests ?? []).map((pd) => pd.destination_id);
   const imageUrls = (packageImages ?? [])
     .sort((a, b) => a.display_order - b.display_order)
     .map((img) => img.url);

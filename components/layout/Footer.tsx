@@ -3,10 +3,7 @@ import { Link } from "@/lib/i18n/navigation";
 import { Logo } from "@/components/shared/Logo";
 
 export async function Footer() {
-  const [tFooter, tNav] = await Promise.all([
-    getTranslations("footer"),
-    getTranslations("nav"),
-  ]);
+  const [tFooter, tNav] = await Promise.all([getTranslations("footer"), getTranslations("nav")]);
 
   return (
     <footer className="mt-auto border-t border-border">
@@ -19,14 +16,8 @@ export async function Footer() {
           </div>
 
           {/* Navigation */}
-          <nav
-            aria-label="Footer navigation"
-            className="flex flex-col gap-3 text-sm"
-          >
-            <Link
-              href="/paquetes?tipo=nacional"
-              className="transition-colors hover:text-primary"
-            >
+          <nav aria-label="Footer navigation" className="flex flex-col gap-3 text-sm">
+            <Link href="/paquetes?tipo=nacional" className="transition-colors hover:text-primary">
               {tFooter("nationalTours")}
             </Link>
             <Link
@@ -35,10 +26,7 @@ export async function Footer() {
             >
               {tFooter("internationalTours")}
             </Link>
-            <Link
-              href="/destinos"
-              className="transition-colors hover:text-primary"
-            >
+            <Link href="/destinos" className="transition-colors hover:text-primary">
               {tNav("destinations")}
             </Link>
           </nav>
@@ -49,8 +37,7 @@ export async function Footer() {
 
         <div className="mt-12 border-t border-border pt-6">
           <p className="text-xs text-muted">
-            &copy; {new Date().getFullYear()} L&A Viajes y Aventuras.{" "}
-            {tFooter("rights")}
+            &copy; {new Date().getFullYear()} L&A Viajes y Aventuras. {tFooter("rights")}
           </p>
         </div>
       </div>

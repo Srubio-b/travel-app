@@ -14,9 +14,7 @@ type DestinationPageProps = {
   params: Promise<{ locale: string; slug: string }>;
 };
 
-export async function generateMetadata({
-  params,
-}: DestinationPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: DestinationPageProps): Promise<Metadata> {
   const { locale, slug } = await params;
   const supabase = await createClient();
   const destination = await getDestinationBySlug(supabase, slug);
@@ -25,8 +23,7 @@ export async function generateMetadata({
 
   const url = `${SITE_URL}/${locale}/destinos/${slug}`;
   const description =
-    destination.description?.slice(0, 160) ??
-    `${destination.name}, ${destination.country}`;
+    destination.description?.slice(0, 160) ?? `${destination.name}, ${destination.country}`;
 
   return {
     title: `${destination.name}, ${destination.country}`,
@@ -41,14 +38,9 @@ export async function generateMetadata({
   };
 }
 
-export default async function DestinationPage({
-  params,
-}: DestinationPageProps) {
+export default async function DestinationPage({ params }: DestinationPageProps) {
   const { slug } = await params;
-  const [t, supabase] = await Promise.all([
-    getTranslations("destination"),
-    createClient(),
-  ]);
+  const [t, supabase] = await Promise.all([getTranslations("destination"), createClient()]);
 
   const destination = await getDestinationBySlug(supabase, slug);
 
@@ -81,9 +73,7 @@ export default async function DestinationPage({
       <section className="container-page py-16 sm:py-24">
         {destination.description && (
           <div className="mx-auto max-w-3xl">
-            <p className="prose-content text-lg text-muted">
-              {destination.description}
-            </p>
+            <p className="prose-content text-lg text-muted">{destination.description}</p>
           </div>
         )}
 

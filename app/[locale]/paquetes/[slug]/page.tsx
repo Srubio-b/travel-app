@@ -17,9 +17,7 @@ type PackageDetailPageProps = {
   params: Promise<{ locale: string; slug: string }>;
 };
 
-export async function generateMetadata({
-  params,
-}: PackageDetailPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: PackageDetailPageProps): Promise<Metadata> {
   const { locale, slug } = await params;
   const supabase = await createClient();
   const pkg = await getPackageBySlug(supabase, slug);
@@ -43,9 +41,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function PackageDetailPage({
-  params,
-}: PackageDetailPageProps) {
+export default async function PackageDetailPage({ params }: PackageDetailPageProps) {
   const { slug } = await params;
   const [t, tCatalog, supabase] = await Promise.all([
     getTranslations("package"),
@@ -58,9 +54,7 @@ export default async function PackageDetailPage({
   if (!pkg) notFound();
 
   const primaryImage = pkg.images.find((img) => img.isPrimary) ?? pkg.images[0];
-  const otherImages = pkg.images.filter(
-    (img) => img.url !== primaryImage?.url,
-  );
+  const otherImages = pkg.images.filter((img) => img.url !== primaryImage?.url);
 
   const productSchema = {
     "@context": "https://schema.org",
@@ -93,15 +87,9 @@ export default async function PackageDetailPage({
 
         {/* Gallery */}
         {otherImages.length > 0 && (
-          <div
-            className="mt-2 grid grid-cols-4 gap-2 sm:grid-cols-5"
-            aria-label={t("gallery")}
-          >
+          <div className="mt-2 grid grid-cols-4 gap-2 sm:grid-cols-5" aria-label={t("gallery")}>
             {otherImages.map((img) => (
-              <div
-                key={img.url}
-                className="aspect-square overflow-hidden rounded-sm bg-surface"
-              >
+              <div key={img.url} className="aspect-square overflow-hidden rounded-sm bg-surface">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={img.url}
@@ -132,9 +120,7 @@ export default async function PackageDetailPage({
                   <h2 className="text-sm font-medium uppercase tracking-widest text-fg">
                     {t("includes")}
                   </h2>
-                  <p className="prose-content mt-3 text-muted">
-                    {pkg.whatIncludes}
-                  </p>
+                  <p className="prose-content mt-3 text-muted">{pkg.whatIncludes}</p>
                 </section>
               )}
 
@@ -143,9 +129,7 @@ export default async function PackageDetailPage({
                   <h2 className="text-sm font-medium uppercase tracking-widest text-fg">
                     {t("excludes")}
                   </h2>
-                  <p className="prose-content mt-3 text-muted">
-                    {pkg.whatExcludes}
-                  </p>
+                  <p className="prose-content mt-3 text-muted">{pkg.whatExcludes}</p>
                 </section>
               )}
 
@@ -176,9 +160,7 @@ export default async function PackageDetailPage({
             <div className="space-y-6 rounded-sm border border-border p-6">
               <div className="space-y-3">
                 <span className="inline-block rounded-sm bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">
-                  {pkg.isNational
-                    ? tCatalog("badgeNational")
-                    : tCatalog("badgeInternational")}
+                  {pkg.isNational ? tCatalog("badgeNational") : tCatalog("badgeInternational")}
                 </span>
                 <p className="text-sm text-muted">
                   {tCatalog("days", { count: pkg.durationDays })}
@@ -189,9 +171,7 @@ export default async function PackageDetailPage({
                 {formatCOP(pkg.price)}
               </p>
 
-              <WhatsAppButton
-                message={`¡Hola! Quiero información sobre ${pkg.title}.`}
-              />
+              <WhatsAppButton message={`¡Hola! Quiero información sobre ${pkg.title}.`} />
             </div>
           </aside>
         </div>

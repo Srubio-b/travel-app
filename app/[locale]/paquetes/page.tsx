@@ -25,13 +25,8 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function PaquetesPage({
-  searchParams,
-}: PaquetesPageProps) {
-  const [{ tipo }, t] = await Promise.all([
-    searchParams,
-    getTranslations("catalog"),
-  ]);
+export default async function PaquetesPage({ searchParams }: PaquetesPageProps) {
+  const [{ tipo }, t] = await Promise.all([searchParams, getTranslations("catalog")]);
 
   const supabase = await createClient();
   const packages = await listPackages(supabase, { tipo: toTipoFilter(tipo) });

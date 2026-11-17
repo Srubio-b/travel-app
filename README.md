@@ -4,13 +4,13 @@ Plataforma web para la agencia de turismo **L&A Viajes y Aventuras**. Catálogo 
 
 ## Stack
 
-| Capa | Tecnología |
-|---|---|
-| Frontend | Next.js 16 (App Router, TypeScript) |
-| Backend | Next.js API Routes (full-stack) |
-| Base de datos | Supabase (PostgreSQL) |
-| Autenticación | Supabase Auth |
-| Estilos | Tailwind CSS v4 |
+| Capa          | Tecnología                          |
+| ------------- | ----------------------------------- |
+| Frontend      | Next.js 16 (App Router, TypeScript) |
+| Backend       | Next.js API Routes (full-stack)     |
+| Base de datos | Supabase (PostgreSQL)               |
+| Autenticación | Supabase Auth                       |
+| Estilos       | Tailwind CSS v4                     |
 
 ## Estructura del Proyecto
 

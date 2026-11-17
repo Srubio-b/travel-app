@@ -36,14 +36,9 @@ export async function createPaquete(
   const title = (formData.get("title") as string)?.trim();
   let slug = (formData.get("slug") as string)?.trim() || slugify(title ?? "");
   const description = (formData.get("description") as string)?.trim() || "";
-  const whatIncludes =
-    (formData.get("includes") as string)?.trim() || null;
-  const whatExcludes =
-    (formData.get("excludes") as string)?.trim() || null;
-  const durationDays = parseInt(
-    formData.get("duration_days") as string,
-    10,
-  );
+  const whatIncludes = (formData.get("includes") as string)?.trim() || null;
+  const whatExcludes = (formData.get("excludes") as string)?.trim() || null;
+  const durationDays = parseInt(formData.get("duration_days") as string, 10);
   const isNational = formData.get("is_national") === "on";
   const price = parseFloat(formData.get("price_cop") as string);
   const isActive = formData.get("is_active") === "on";
@@ -54,12 +49,8 @@ export async function createPaquete(
   let imageUrls: string[] = [];
 
   try {
-    destinationIds = JSON.parse(
-      (formData.get("destination_ids") as string) || "[]",
-    );
-    imageUrls = JSON.parse(
-      (formData.get("image_urls") as string) || "[]",
-    );
+    destinationIds = JSON.parse((formData.get("destination_ids") as string) || "[]");
+    imageUrls = JSON.parse((formData.get("image_urls") as string) || "[]");
   } catch {
     return {
       success: false,
@@ -154,15 +145,13 @@ export async function createPaquete(
 
   // Insert package_destinations
   if (destinationIds.length > 0) {
-    const { error: pdError } = await adminClient
-      .from("package_destinations")
-      .insert(
-        destinationIds.map((destId, i) => ({
-          package_id: pkg.id,
-          destination_id: destId,
-          display_order: i,
-        })),
-      );
+    const { error: pdError } = await adminClient.from("package_destinations").insert(
+      destinationIds.map((destId, i) => ({
+        package_id: pkg.id,
+        destination_id: destId,
+        display_order: i,
+      })),
+    );
 
     if (pdError) {
       return { success: false, error: pdError.message };
@@ -171,17 +160,15 @@ export async function createPaquete(
 
   // Insert package_images (first is primary)
   if (imageUrls.length > 0) {
-    const { error: piError } = await adminClient
-      .from("package_images")
-      .insert(
-        imageUrls.map((url, i) => ({
-          package_id: pkg.id,
-          url,
-          is_primary: i === 0,
-          display_order: i,
-          alt_text: null,
-        })),
-      );
+    const { error: piError } = await adminClient.from("package_images").insert(
+      imageUrls.map((url, i) => ({
+        package_id: pkg.id,
+        url,
+        is_primary: i === 0,
+        display_order: i,
+        alt_text: null,
+      })),
+    );
 
     if (piError) {
       return { success: false, error: piError.message };
@@ -210,14 +197,9 @@ export async function updatePaquete(
   const title = (formData.get("title") as string)?.trim();
   let slug = (formData.get("slug") as string)?.trim() || slugify(title ?? "");
   const description = (formData.get("description") as string)?.trim() || "";
-  const whatIncludes =
-    (formData.get("includes") as string)?.trim() || null;
-  const whatExcludes =
-    (formData.get("excludes") as string)?.trim() || null;
-  const durationDays = parseInt(
-    formData.get("duration_days") as string,
-    10,
-  );
+  const whatIncludes = (formData.get("includes") as string)?.trim() || null;
+  const whatExcludes = (formData.get("excludes") as string)?.trim() || null;
+  const durationDays = parseInt(formData.get("duration_days") as string, 10);
   const isNational = formData.get("is_national") === "on";
   const price = parseFloat(formData.get("price_cop") as string);
   const isActive = formData.get("is_active") === "on";
@@ -228,12 +210,8 @@ export async function updatePaquete(
   let imageUrls: string[] = [];
 
   try {
-    destinationIds = JSON.parse(
-      (formData.get("destination_ids") as string) || "[]",
-    );
-    imageUrls = JSON.parse(
-      (formData.get("image_urls") as string) || "[]",
-    );
+    destinationIds = JSON.parse((formData.get("destination_ids") as string) || "[]");
+    imageUrls = JSON.parse((formData.get("image_urls") as string) || "[]");
   } catch {
     return {
       success: false,
@@ -323,9 +301,7 @@ export async function updatePaquete(
       is_national: isNational,
       price,
       is_active: isActive,
-      published_at: publishNow
-        ? new Date().toISOString()
-        : undefined,
+      published_at: publishNow ? new Date().toISOString() : undefined,
       updated_at: new Date().toISOString(),
     })
     .eq("id", id);
@@ -335,21 +311,16 @@ export async function updatePaquete(
   }
 
   // Replace package_destinations
-  await adminClient
-    .from("package_destinations")
-    .delete()
-    .eq("package_id", id);
+  await adminClient.from("package_destinations").delete().eq("package_id", id);
 
   if (destinationIds.length > 0) {
-    const { error: pdError } = await adminClient
-      .from("package_destinations")
-      .insert(
-        destinationIds.map((destId, i) => ({
-          package_id: id,
-          destination_id: destId,
-          display_order: i,
-        })),
-      );
+    const { error: pdError } = await adminClient.from("package_destinations").insert(
+      destinationIds.map((destId, i) => ({
+        package_id: id,
+        destination_id: destId,
+        display_order: i,
+      })),
+    );
 
     if (pdError) {
       return { success: false, error: pdError.message };
@@ -357,23 +328,18 @@ export async function updatePaquete(
   }
 
   // Replace package_images
-  await adminClient
-    .from("package_images")
-    .delete()
-    .eq("package_id", id);
+  await adminClient.from("package_images").delete().eq("package_id", id);
 
   if (imageUrls.length > 0) {
-    const { error: piError } = await adminClient
-      .from("package_images")
-      .insert(
-        imageUrls.map((url, i) => ({
-          package_id: id,
-          url,
-          is_primary: i === 0,
-          display_order: i,
-          alt_text: null,
-        })),
-      );
+    const { error: piError } = await adminClient.from("package_images").insert(
+      imageUrls.map((url, i) => ({
+        package_id: id,
+        url,
+        is_primary: i === 0,
+        display_order: i,
+        alt_text: null,
+      })),
+    );
 
     if (piError) {
       return { success: false, error: piError.message };
@@ -516,10 +482,7 @@ export async function uploadPaqueteImage(
   } catch (err) {
     return {
       success: false,
-      error:
-        err instanceof Error
-          ? err.message
-          : "Error al subir la imagen.",
+      error: err instanceof Error ? err.message : "Error al subir la imagen.",
     };
   }
 }
