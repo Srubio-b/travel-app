@@ -31,9 +31,7 @@ export function AdminSidebarNav({ links }: Props) {
             href={href}
             aria-current={isActive ? "page" : undefined}
             className={`block rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-primary-subtle hover:text-primary ${
-              isActive
-                ? "bg-primary-subtle text-primary"
-                : "text-fg"
+              isActive ? "bg-primary-subtle text-primary" : "text-fg"
             }`}
           >
             {label}

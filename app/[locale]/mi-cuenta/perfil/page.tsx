@@ -3,11 +3,7 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { ProfileForm } from "./profile-form";
 
-export default async function PerfilPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
+export default async function PerfilPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const supabase = await createClient();
 

@@ -16,9 +16,7 @@ export type UserRoleInfo = {
  * without extra queries.
  */
 export const getUserRole = cache(
-  async (
-    supabase: SupabaseClient<Database>,
-  ): Promise<UserRoleInfo> => {
+  async (supabase: SupabaseClient<Database>): Promise<UserRoleInfo> => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -41,10 +39,7 @@ export const getUserRole = cache(
  *
  * Returns the user object when authenticated.
  */
-export async function requireAuth(
-  supabase: SupabaseClient<Database>,
-  locale = "es",
-) {
+export async function requireAuth(supabase: SupabaseClient<Database>, locale = "es") {
   const { user } = await getUserRole(supabase);
   if (!user) redirect(`/${locale}/auth/login`);
   return user;
@@ -57,10 +52,7 @@ export async function requireAuth(
  *
  * Returns the user and role info when authorized.
  */
-export async function requireAdmin(
-  supabase: SupabaseClient<Database>,
-  locale = "es",
-) {
+export async function requireAdmin(supabase: SupabaseClient<Database>, locale = "es") {
   const { role, user } = await getUserRole(supabase);
 
   if (!user) redirect(`/${locale}/auth/login`);

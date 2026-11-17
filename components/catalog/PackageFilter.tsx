@@ -44,9 +44,8 @@ export function PackageFilter() {
   return (
     <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={t("filterLabel")}>
       {pills.map(({ value, label }) => {
-        const isActive = value === ""
-          ? !currentTipo || !isFilterValue(currentTipo)
-          : currentTipo === value;
+        const isActive =
+          value === "" ? !currentTipo || !isFilterValue(currentTipo) : currentTipo === value;
 
         return (
           <button

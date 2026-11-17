@@ -31,10 +31,7 @@ export async function PackageCard({ pkg }: PackageCardProps) {
       <div className="mt-4 space-y-2">
         <div className="flex items-start justify-between gap-4">
           <h3 className="font-display text-xl leading-display tracking-tight">
-            <Link
-              href={`/paquetes/${pkg.slug}`}
-              className="transition-colors hover:text-primary"
-            >
+            <Link href={`/paquetes/${pkg.slug}`} className="transition-colors hover:text-primary">
               {pkg.title}
             </Link>
           </h3>
@@ -45,9 +42,7 @@ export async function PackageCard({ pkg }: PackageCardProps) {
           )}
         </div>
         <div className="flex items-center justify-between">
-          <p className="text-sm text-muted">
-            {t("days", { count: pkg.durationDays })}
-          </p>
+          <p className="text-sm text-muted">{t("days", { count: pkg.durationDays })}</p>
           <p className="font-medium text-fg">{formatCOP(pkg.price)}</p>
         </div>
       </div>

@@ -17,9 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function DestinosPage() {
-  const [t] = await Promise.all([
-    getTranslations("destinations"),
-  ]);
+  const [t] = await Promise.all([getTranslations("destinations")]);
 
   const supabase = createPublicClient();
   const destinations = await listDestinations(supabase);
@@ -44,11 +42,7 @@ export default async function DestinosPage() {
         ) : (
           <div className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
             {destinations.map((dest) => (
-              <Link
-                key={dest.slug}
-                href={`/destinos/${dest.slug}`}
-                className="group block"
-              >
+              <Link key={dest.slug} href={`/destinos/${dest.slug}`} className="group block">
                 <article>
                   <div className="aspect-[4/5] w-full overflow-hidden rounded-sm bg-surface">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -69,9 +63,7 @@ export default async function DestinosPage() {
                     </p>
                   </div>
                   {dest.description && (
-                    <p className="mt-2 line-clamp-2 text-sm text-muted/80">
-                      {dest.description}
-                    </p>
+                    <p className="mt-2 line-clamp-2 text-sm text-muted/80">{dest.description}</p>
                   )}
                 </article>
               </Link>

@@ -4,14 +4,14 @@
 // ── Enums ──────────────────────────────────────────────────
 
 export enum RoleName {
-  Admin = 'admin',
-  Cliente = 'cliente',
+  Admin = "admin",
+  Cliente = "cliente",
 }
 
 export enum TripStatus {
-  Upcoming = 'upcoming',
-  Completed = 'completed',
-  Cancelled = 'cancelled',
+  Upcoming = "upcoming",
+  Completed = "completed",
+  Cancelled = "cancelled",
 }
 
 // ── Value Object Type Aliases ──────────────────────────────
@@ -42,9 +42,9 @@ export interface Timestamped {
 /** Extracts a human-readable label for a TripStatus value */
 export function tripStatusLabel(status: TripStatus): string {
   const labels: Record<TripStatus, string> = {
-    [TripStatus.Upcoming]: 'Próximo',
-    [TripStatus.Completed]: 'Completado',
-    [TripStatus.Cancelled]: 'Cancelado',
+    [TripStatus.Upcoming]: "Próximo",
+    [TripStatus.Completed]: "Completado",
+    [TripStatus.Cancelled]: "Cancelado",
   };
   return labels[status];
 }

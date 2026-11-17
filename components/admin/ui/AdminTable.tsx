@@ -72,9 +72,7 @@ export function AdminTable<T extends { id: string }>({
 
       {/* ── Table ──────────────────────────── */}
       {data.length === 0 ? (
-        <p className="py-8 text-center text-sm text-muted-foreground">
-          {labels.noResults}
-        </p>
+        <p className="py-8 text-center text-sm text-muted-foreground">{labels.noResults}</p>
       ) : (
         <div className="overflow-x-auto rounded-lg border border-border">
           <table className="w-full text-left text-sm">
@@ -98,10 +96,7 @@ export function AdminTable<T extends { id: string }>({
             </thead>
             <tbody className="divide-y divide-border">
               {data.map((row) => (
-                <tr
-                  key={row.id}
-                  className="transition-colors hover:bg-surface"
-                >
+                <tr key={row.id} className="transition-colors hover:bg-surface">
                   {columns.map((col) => (
                     <td key={col.key} className="px-4 py-3">
                       {col.render

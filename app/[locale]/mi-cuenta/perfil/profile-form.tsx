@@ -58,9 +58,7 @@ export function ProfileForm({ defaultName, defaultPhone, avatarUrl }: Props) {
       {/* Avatar upload */}
       <form action={avatarAction} className="space-y-3">
         <div>
-          <label className="mb-1 block text-sm font-medium">
-            {t("avatarLabel")}
-          </label>
+          <label className="mb-1 block text-sm font-medium">{t("avatarLabel")}</label>
 
           {avatarPreview && (
             // eslint-disable-next-line @next/next/no-img-element
@@ -92,21 +90,22 @@ export function ProfileForm({ defaultName, defaultPhone, avatarUrl }: Props) {
         )}
 
         {fileError && (
-          <p className="text-sm text-red-600" role="alert">{fileError}</p>
+          <p className="text-sm text-red-600" role="alert">
+            {fileError}
+          </p>
         )}
 
         {avatarState?.success === false && (
-          <p className="text-sm text-red-600" role="alert">{avatarState.error}</p>
+          <p className="text-sm text-red-600" role="alert">
+            {avatarState.error}
+          </p>
         )}
       </form>
 
       {/* Profile fields */}
       <form action={action} className="space-y-4">
         <div>
-          <label
-            htmlFor="full_name"
-            className="mb-1 block text-sm font-medium"
-          >
+          <label htmlFor="full_name" className="mb-1 block text-sm font-medium">
             {t("fullNameLabel")}
           </label>
           <input
@@ -136,9 +135,7 @@ export function ProfileForm({ defaultName, defaultPhone, avatarUrl }: Props) {
 
         {state?.success === false && (
           <p className="text-sm text-red-600" role="alert">
-            {state.field === "phone"
-              ? t("phoneError")
-              : state.error}
+            {state.field === "phone" ? t("phoneError") : state.error}
           </p>
         )}
 

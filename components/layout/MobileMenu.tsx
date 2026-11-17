@@ -60,9 +60,7 @@ export function MobileMenu() {
           }`}
         />
         <span
-          className={`block h-px w-5 bg-fg transition-all duration-200 ${
-            open ? "opacity-0" : ""
-          }`}
+          className={`block h-px w-5 bg-fg transition-all duration-200 ${open ? "opacity-0" : ""}`}
         />
         <span
           className={`block h-px w-5 bg-fg transition-all duration-200 ${
@@ -72,10 +70,7 @@ export function MobileMenu() {
       </button>
 
       {open && (
-        <div
-          className="fixed inset-0 z-40 bg-bg/95 backdrop-blur-sm sm:hidden"
-          onClick={close}
-        >
+        <div className="fixed inset-0 z-40 bg-bg/95 backdrop-blur-sm sm:hidden" onClick={close}>
           <nav
             className="flex h-full flex-col items-center justify-center gap-8"
             onClick={(e) => e.stopPropagation()}

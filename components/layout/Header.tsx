@@ -19,22 +19,13 @@ export async function Header() {
           aria-label="Main navigation"
           className="hidden items-center gap-8 text-sm font-medium sm:flex"
         >
-          <Link
-            href="/"
-            className="transition-colors hover:text-primary"
-          >
+          <Link href="/" className="transition-colors hover:text-primary">
             {t("home")}
           </Link>
-          <Link
-            href="/paquetes"
-            className="transition-colors hover:text-primary"
-          >
+          <Link href="/paquetes" className="transition-colors hover:text-primary">
             {t("packages")}
           </Link>
-          <Link
-            href="/destinos"
-            className="transition-colors hover:text-primary"
-          >
+          <Link href="/destinos" className="transition-colors hover:text-primary">
             {t("destinations")}
           </Link>
         </nav>

@@ -31,20 +31,16 @@ export function createAdminClient() {
     );
   }
 
-  return createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    serviceRoleKey,
-    {
-      cookies: {
-        getAll: () => {
-          // Admin client does NOT manage user cookies — it uses the
-          // service_role key for RLS bypass. Cookie context is irrelevant.
-          return [];
-        },
-        setAll: () => {
-          // No-op — see above.
-        },
+  return createServerClient<Database>(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceRoleKey, {
+    cookies: {
+      getAll: () => {
+        // Admin client does NOT manage user cookies — it uses the
+        // service_role key for RLS bypass. Cookie context is irrelevant.
+        return [];
+      },
+      setAll: () => {
+        // No-op — see above.
       },
     },
-  );
+  });
 }

@@ -11,9 +11,7 @@ export default async function NotFound() {
   return (
     <PublicLayout>
       <section className="container-page flex flex-col items-center gap-6 px-6 py-24 text-center sm:py-32">
-        <p className="text-xs font-medium uppercase tracking-widest text-muted">
-          404
-        </p>
+        <p className="text-xs font-medium uppercase tracking-widest text-muted">404</p>
         <h1 className="font-display text-4xl leading-display tracking-tight sm:text-5xl">
           {t("title")}
         </h1>

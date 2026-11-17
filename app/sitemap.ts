@@ -12,9 +12,7 @@ function withAlternates(path: string) {
   return {
     url: `${BASE_URL}${path === "" ? "" : path}`,
     alternates: {
-      languages: Object.fromEntries(
-        routing.locales.map((l) => [l, `${BASE_URL}/${l}${path}`]),
-      ),
+      languages: Object.fromEntries(routing.locales.map((l) => [l, `${BASE_URL}/${l}${path}`])),
     },
   };
 }
@@ -51,26 +49,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const supabase = createPublicClient();
     const { packages, destinations } = await getAllActiveSlugs(supabase);
 
-    const packageEntries: MetadataRoute.Sitemap = routing.locales.flatMap(
-      (locale) =>
-        packages.map(({ slug }) => ({
-          url: `${BASE_URL}/${locale}/paquetes/${slug}`,
-          lastModified: new Date(),
-          changeFrequency: "weekly" as const,
-          priority: 0.8,
-          alternates: withAlternates(`/paquetes/${slug}`).alternates,
-        })),
+    const packageEntries: MetadataRoute.Sitemap = routing.locales.flatMap((locale) =>
+      packages.map(({ slug }) => ({
+        url: `${BASE_URL}/${locale}/paquetes/${slug}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+        alternates: withAlternates(`/paquetes/${slug}`).alternates,
+      })),
     );
 
-    const destinationEntries: MetadataRoute.Sitemap = routing.locales.flatMap(
-      (locale) =>
-        destinations.map(({ slug }) => ({
-          url: `${BASE_URL}/${locale}/destinos/${slug}`,
-          lastModified: new Date(),
-          changeFrequency: "weekly" as const,
-          priority: 0.7,
-          alternates: withAlternates(`/destinos/${slug}`).alternates,
-        })),
+    const destinationEntries: MetadataRoute.Sitemap = routing.locales.flatMap((locale) =>
+      destinations.map(({ slug }) => ({
+        url: `${BASE_URL}/${locale}/destinos/${slug}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+        alternates: withAlternates(`/destinos/${slug}`).alternates,
+      })),
     );
 
     return [...staticEntries, ...packageEntries, ...destinationEntries];

@@ -34,10 +34,7 @@ export function DestinoMultiSelect({
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(
-    () =>
-      destinations.filter((d) =>
-        d.name.toLowerCase().includes(search.toLowerCase()),
-      ),
+    () => destinations.filter((d) => d.name.toLowerCase().includes(search.toLowerCase())),
     [destinations, search],
   );
 
@@ -68,9 +65,7 @@ export function DestinoMultiSelect({
 
       {/* ── Checkbox list ──────────────────── */}
       {filtered.length === 0 ? (
-        <p className="py-4 text-center text-sm text-muted-foreground">
-          {labels.empty}
-        </p>
+        <p className="py-4 text-center text-sm text-muted-foreground">{labels.empty}</p>
       ) : (
         <div className="max-h-56 overflow-y-auto rounded-lg border border-border">
           {filtered.map((dest) => (

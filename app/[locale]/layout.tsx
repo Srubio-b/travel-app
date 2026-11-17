@@ -24,16 +24,14 @@ export const metadata: Metadata = {
     default: "L&A Viajes y Aventuras",
     template: "%s | L&A Viajes y Aventuras",
   },
-  description:
-    "Planes turísticos nacionales e internacionales con atención personalizada.",
+  description: "Planes turísticos nacionales e internacionales con atención personalizada.",
 };
 
 const businessSchema = {
   "@context": "https://schema.org",
   "@type": ["TravelAgency", "LocalBusiness"],
   name: "L&A Viajes y Aventuras",
-  description:
-    "Agencia de turismo especializada en planes nacionales e internacionales.",
+  description: "Agencia de turismo especializada en planes nacionales e internacionales.",
   url: SITE_URL,
   areaServed: "CO",
   priceRange: "$$",
@@ -56,10 +54,7 @@ export default async function LocaleLayout({
   }
 
   return (
-    <html
-      lang={locale}
-      className={`${inter.variable} ${playfair.variable} h-full antialiased`}
-    >
+    <html lang={locale} className={`${inter.variable} ${playfair.variable} h-full antialiased`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeAntiFlashScript }} />
       </head>

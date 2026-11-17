@@ -9,6 +9,7 @@ import { useActionState, useState } from "react";
 export type UploadResult = {
   success: boolean;
   url?: string;
+  path?: string;
   error?: string;
 };
 
@@ -17,17 +18,14 @@ export type ImageUploaderProps = {
   initialUrl?: string;
   /**
    * Server Action that receives the selected file via FormData and returns
-   * an UploadResult with the public URL on success.
+   * an UploadResult with the public URL and relative path on success.
    *
    * The Server Action signature follows the useActionState convention:
    *   (prev: UploadResult | null, formData: FormData) => Promise<UploadResult>
    */
-  action: (
-    prev: UploadResult | null,
-    formData: FormData,
-  ) => Promise<UploadResult>;
-  /** Called when an upload succeeds — receives the public URL */
-  onSuccess?: (url: string) => void;
+  action: (prev: UploadResult | null, formData: FormData) => Promise<UploadResult>;
+  /** Called when an upload succeeds — receives the public URL and relative path */
+  onSuccess?: (info: { url: string; path: string }) => void;
   /** Translated labels forwarded from parent */
   labels: {
     upload: string;
@@ -41,22 +39,17 @@ export type ImageUploaderProps = {
  * Component
  * ────────────────────────────────────────────── */
 
-export function ImageUploader({
-  initialUrl,
-  action,
-  onSuccess,
-  labels,
-}: ImageUploaderProps) {
+export function ImageUploader({ initialUrl, action, onSuccess, labels }: ImageUploaderProps) {
   const [preview, setPreview] = useState<string | null>(initialUrl ?? null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const [state, formAction, isPending] = useActionState(action, null);
 
   // Notify parent when upload succeeds
-  if (state?.success && state.url && state.url !== preview) {
+  if (state?.success && state.url && state.path && state.url !== preview) {
     setPreview(state.url);
     setSelectedFile(null);
-    onSuccess?.(state.url);
+    onSuccess?.({ url: state.url, path: state.path });
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

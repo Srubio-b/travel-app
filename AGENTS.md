@@ -1,33 +1,37 @@
 # AGENTS.md — L&A Viajes y Aventuras
 
 ## Propósito de la Aplicación
+
 Plataforma web para la agencia de turismo "L&A Viajes y Aventuras" que resuelve dos problemas de negocio:
+
 1. Baja presencia en redes sociales y motores de búsqueda (se requiere fuerte SEO).
 2. Falta de un catálogo digital claro y atractivo de planes turísticos (nacionales e internacionales).
 
 La conversión NO se realiza en línea (no hay pagos ni checkout). El objetivo es que el visitante contacte
 al negocio vía WhatsApp. La plataforma debe soportar además:
+
 - Panel de administrador con autenticación para gestionar (crear, editar, eliminar) destinos, paquetes y planes.
 - Panel de cliente autenticado con un "recap" histórico de viajes realizados.
 - Sistema de referidos automatizado vía WhatsApp mediante links únicos por cliente (fase próxima).
 - Chatbot con IA para automatizar la atención por WhatsApp (fase futura, no en el MVP).
 
 ## Roles del Sistema
+
 - **Visitante público**: explora catálogo, filtra por nacional/internacional, contacta vía WhatsApp.
 - **Cliente registrado**: inicia sesión y ve su panel personal con historial de viajes.
 - **Administrador**: inicia sesión y gestiona todo el contenido del sitio (CRUD completo).
 
 ## Stack Tecnológico Oficial
 
-| Capa | Tecnología | Hosting |
-|---|---|---|
-| Frontend | Next.js 16.2.10 (App Router, TypeScript strict) | Vercel |
-| Backend | Next.js API Routes + Server Actions (full-stack) | Vercel |
-| Base de datos | Supabase PostgreSQL | Supabase Cloud |
-| Autenticación | Supabase Auth (roles: admin, cliente) | Supabase Cloud |
-| Estilos | Tailwind CSS v4 | — |
-| i18n | next-intl (es/en) | — |
-| Paquetería | pnpm | — |
+| Capa          | Tecnología                                       | Hosting        |
+| ------------- | ------------------------------------------------ | -------------- |
+| Frontend      | Next.js 16.2.10 (App Router, TypeScript strict)  | Vercel         |
+| Backend       | Next.js API Routes + Server Actions (full-stack) | Vercel         |
+| Base de datos | Supabase PostgreSQL                              | Supabase Cloud |
+| Autenticación | Supabase Auth (roles: admin, cliente)            | Supabase Cloud |
+| Estilos       | Tailwind CSS v4                                  | —              |
+| i18n          | next-intl (es/en)                                | —              |
+| Paquetería    | pnpm                                             | —              |
 
 ### Decisiones clave
 
@@ -39,6 +43,7 @@ al negocio vía WhatsApp. La plataforma debe soportar además:
 ## Funcionalidad Implementada ✅
 
 ### Catálogo Público
+
 - Landing pages de paquetes con SEO dinámico, JSON-LD (Product, TravelAgency, LocalBusiness)
 - Páginas de destino con paquetes relacionados
 - Filtro por nacional/internacional
@@ -47,24 +52,29 @@ al negocio vía WhatsApp. La plataforma debe soportar además:
 - 404 personalizada + SkipLink de accesibilidad
 
 ### Autenticación y Roles
+
 - Registro y login con Supabase Auth
 - Middleware de protección de rutas (admin, cliente, público)
 - Row Level Security (RLS) en Supabase
 - Server Actions con `requireAdmin()` + `createAdminClient()` para operaciones seguras
 
 ### Panel de Administración
+
 - Sidebar con navegación y resaltado de ruta activa
 - CRUD completo de **Destinos** (crear, listar con búsqueda ILIKE, editar, soft-delete)
 - CRUD completo de **Paquetes** (crear con galería de imágenes + multi-destino, listar con badges, editar, soft-delete, publish/draft toggle)
 - Componentes compartidos: AdminTable, AdminFormLayout, ImageUploader, ConfirmDialog
 
 ### Panel de Cliente
+
 - Página de perfil con formulario y avatar
 
 ### i18n
+
 - Traducciones completas es/en para todo el admin, auth y catálogo
 
 ## Fuera de alcance del MVP
+
 - Automatización de referidos vía WhatsApp Business Cloud API + n8n
 - Chatbot con IA para atención en WhatsApp
 - Pagos en línea
@@ -114,17 +124,19 @@ travel-app/
 ## Convenciones de Código
 
 ### Server Actions (admin)
+
 ```typescript
 export async function createAlgo(formData: FormData) {
-  const { user } = await requireAdmin()   // 1. Verificar rol admin
-  const adminDb = createAdminClient()      // 2. Cliente con service_role
+  const { user } = await requireAdmin(); // 1. Verificar rol admin
+  const adminDb = createAdminClient(); // 2. Cliente con service_role
   // ... validar, insertar, revalidar
-  revalidatePath('/admin/algo')
-  return { success: true }
+  revalidatePath("/admin/algo");
+  return { success: true };
 }
 ```
 
 ### Componentes Client con i18n
+
 ```typescript
 // Server Component pasa labels como props
 <DestinoMultiSelect
@@ -137,21 +149,20 @@ export async function createAlgo(formData: FormData) {
 
 ## PRs Existentes (GitHub)
 
-| PR | Branch | Estado |
-|---|---|---|
-| [#1](https://github.com/Srubio-b/travel-app/pull/1) feat/admin-infra | `feat/admin-infra` → `master` | Mergeado en `master` |
-| [#2](https://github.com/Srubio-b/travel-app/pull/2) feat/admin-destinos | `feat/admin-destinos` → `feat/admin-infra` | Cerrado; contenido ya integrado en `master` |
+| PR                                                                      | Branch                                        | Estado                                      |
+| ----------------------------------------------------------------------- | --------------------------------------------- | ------------------------------------------- |
+| [#1](https://github.com/Srubio-b/travel-app/pull/1) feat/admin-infra    | `feat/admin-infra` → `master`                 | Mergeado en `master`                        |
+| [#2](https://github.com/Srubio-b/travel-app/pull/2) feat/admin-destinos | `feat/admin-destinos` → `feat/admin-infra`    | Cerrado; contenido ya integrado en `master` |
 | [#3](https://github.com/Srubio-b/travel-app/pull/3) feat/admin-paquetes | `feat/admin-paquetes` → `feat/admin-destinos` | Cerrado; contenido ya integrado en `master` |
 
 ## Comandos de verificación
 
-| Comando | Uso |
-|---|---|
-| `pnpm lint` | ESLint (debe quedar en 0 errores) |
-| `pnpm typecheck` | `tsc --noEmit` |
-| `pnpm build` | Build de producción |
-| `pnpm format` / `pnpm format:check` | Prettier |
-
+| Comando                             | Uso                               |
+| ----------------------------------- | --------------------------------- |
+| `pnpm lint`                         | ESLint (debe quedar en 0 errores) |
+| `pnpm typecheck`                    | `tsc --noEmit`                    |
+| `pnpm build`                        | Build de producción               |
+| `pnpm format` / `pnpm format:check` | Prettier                          |
 
 ## Notas para Agentes de IA
 

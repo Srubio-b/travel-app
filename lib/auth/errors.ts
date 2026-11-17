@@ -10,8 +10,7 @@
  * complete (e.g. email confirmation required) but is not an error.
  */
 export type AuthResult =
-  | { success: true; message?: string }
-  | { success: false; error: string; field?: string };
+  { success: true; message?: string } | { success: false; error: string; field?: string };
 
 /**
  * Maps raw Supabase auth error messages to user-safe, localised strings.

@@ -13,15 +13,9 @@ import type { UploadImageResult } from "@/app/actions/admin/destinos";
 
 export type DestinoFormFieldsProps = {
   /** Server Action: create or update */
-  action: (
-    prev: ActionResult | null,
-    formData: FormData,
-  ) => Promise<ActionResult>;
+  action: (prev: ActionResult | null, formData: FormData) => Promise<ActionResult>;
   /** Server Action: upload image to destinos bucket */
-  uploadAction: (
-    prev: UploadImageResult | null,
-    formData: FormData,
-  ) => Promise<UploadImageResult>;
+  uploadAction: (prev: UploadImageResult | null, formData: FormData) => Promise<UploadImageResult>;
   /** Prefilled data for edit mode */
   initialData?: {
     id?: string;
@@ -64,6 +58,12 @@ export type DestinoFormFieldsProps = {
  * Component
  * ────────────────────────────────────────────── */
 
+function getPublicImageUrl(path: string): string {
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!base) return path;
+  return `${base}/storage/v1/object/public/package-images/${path}`;
+}
+
 export function DestinoFormFields({
   action,
   uploadAction,
@@ -72,9 +72,7 @@ export function DestinoFormFields({
   backHref,
 }: DestinoFormFieldsProps) {
   const [state, formAction, isPending] = useActionState(action, null);
-  const [imageUrl, setImageUrl] = useState<string | null>(
-    initialData?.image_url ?? null,
-  );
+  const [imagePath, setImagePath] = useState<string | null>(initialData?.image_url ?? null);
 
   // Slug auto-generation tracking
   const [name, setName] = useState(initialData?.name ?? "");
@@ -94,17 +92,15 @@ export function DestinoFormFields({
     setSlug(e.target.value);
   };
 
-  const handleImageSuccess = (url: string) => {
-    setImageUrl(url);
+  const handleImageSuccess = (info: { url: string; path: string }) => {
+    setImagePath(info.path);
   };
 
   return (
     <form action={formAction}>
       {/* Hidden fields */}
-      {initialData?.id && (
-        <input type="hidden" name="id" value={initialData.id} />
-      )}
-      <input type="hidden" name="image_url" value={imageUrl ?? ""} />
+      {initialData?.id && <input type="hidden" name="id" value={initialData.id} />}
+      <input type="hidden" name="image_url" value={imagePath ?? ""} />
 
       <AdminFormLayout
         title={labels.title}
@@ -117,10 +113,7 @@ export function DestinoFormFields({
       >
         {/* ── Name ────────────────────────── */}
         <div>
-          <label
-            htmlFor="destino-name"
-            className="mb-1 block text-sm font-medium text-fg"
-          >
+          <label htmlFor="destino-name" className="mb-1 block text-sm font-medium text-fg">
             {labels.name} <span className="text-destructive">*</span>
           </label>
           <input
@@ -136,10 +129,7 @@ export function DestinoFormFields({
 
         {/* ── Slug ────────────────────────── */}
         <div>
-          <label
-            htmlFor="destino-slug"
-            className="mb-1 block text-sm font-medium text-fg"
-          >
+          <label htmlFor="destino-slug" className="mb-1 block text-sm font-medium text-fg">
             {labels.slug}
           </label>
           <input
@@ -150,17 +140,12 @@ export function DestinoFormFields({
             onChange={handleSlugChange}
             className="w-full rounded-lg border border-border bg-bg px-4 py-2 text-sm text-fg placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary-subtle"
           />
-          <p className="mt-1 text-xs text-muted-foreground">
-            {labels.slugHelper}
-          </p>
+          <p className="mt-1 text-xs text-muted-foreground">{labels.slugHelper}</p>
         </div>
 
         {/* ── Description ─────────────────── */}
         <div>
-          <label
-            htmlFor="destino-description"
-            className="mb-1 block text-sm font-medium text-fg"
-          >
+          <label htmlFor="destino-description" className="mb-1 block text-sm font-medium text-fg">
             {labels.description}
           </label>
           <textarea
@@ -174,10 +159,7 @@ export function DestinoFormFields({
 
         {/* ── Country ─────────────────────── */}
         <div>
-          <label
-            htmlFor="destino-country"
-            className="mb-1 block text-sm font-medium text-fg"
-          >
+          <label htmlFor="destino-country" className="mb-1 block text-sm font-medium text-fg">
             {labels.country} <span className="text-destructive">*</span>
           </label>
           <input
@@ -192,10 +174,7 @@ export function DestinoFormFields({
 
         {/* ── Region ──────────────────────── */}
         <div>
-          <label
-            htmlFor="destino-region"
-            className="mb-1 block text-sm font-medium text-fg"
-          >
+          <label htmlFor="destino-region" className="mb-1 block text-sm font-medium text-fg">
             {labels.region}
           </label>
           <input
@@ -209,11 +188,9 @@ export function DestinoFormFields({
 
         {/* ── Image ───────────────────────── */}
         <div>
-          <label className="mb-1 block text-sm font-medium text-fg">
-            {labels.image}
-          </label>
+          <label className="mb-1 block text-sm font-medium text-fg">{labels.image}</label>
           <ImageUploader
-            initialUrl={initialData?.image_url ?? undefined}
+            initialUrl={imagePath ? getPublicImageUrl(imagePath) : undefined}
             action={uploadAction}
             onSuccess={handleImageSuccess}
             labels={{
@@ -234,20 +211,14 @@ export function DestinoFormFields({
             defaultChecked={initialData?.is_active ?? true}
             className="h-4 w-4 rounded border-border text-primary focus:ring-primary-subtle"
           />
-          <label
-            htmlFor="destino-is-active"
-            className="text-sm font-medium text-fg"
-          >
+          <label htmlFor="destino-is-active" className="text-sm font-medium text-fg">
             {labels.isActive}
           </label>
         </div>
 
         {/* ── Meta Title ──────────────────── */}
         <div>
-          <label
-            htmlFor="destino-meta-title"
-            className="mb-1 block text-sm font-medium text-fg"
-          >
+          <label htmlFor="destino-meta-title" className="mb-1 block text-sm font-medium text-fg">
             {labels.metaTitle}
           </label>
           <input

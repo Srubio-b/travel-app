@@ -15,10 +15,7 @@ async function getFeaturedPackages() {
 }
 
 export default async function HomePage() {
-  const [t, featuredPackages] = await Promise.all([
-    getTranslations("home"),
-    getFeaturedPackages(),
-  ]);
+  const [t, featuredPackages] = await Promise.all([getTranslations("home"), getFeaturedPackages()]);
 
   return (
     <PublicLayout>
@@ -64,11 +61,7 @@ export default async function HomePage() {
 
           <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {featuredPackages.map((pkg) => (
-              <Link
-                key={pkg.id}
-                href={`/paquetes/${pkg.slug}`}
-                className="group block"
-              >
+              <Link key={pkg.id} href={`/paquetes/${pkg.slug}`} className="group block">
                 <article>
                   <div className="aspect-[4/5] w-full overflow-hidden rounded-sm bg-surface">
                     {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/auth/utils";
 import { slugify } from "@/lib/utils/slug";
-import { uploadImage } from "@/lib/supabase/storage";
+import { getPublicUrl, moveImage, uploadImage } from "@/lib/supabase/storage";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
@@ -36,14 +36,9 @@ export async function createPaquete(
   const title = (formData.get("title") as string)?.trim();
   let slug = (formData.get("slug") as string)?.trim() || slugify(title ?? "");
   const description = (formData.get("description") as string)?.trim() || "";
-  const whatIncludes =
-    (formData.get("includes") as string)?.trim() || null;
-  const whatExcludes =
-    (formData.get("excludes") as string)?.trim() || null;
-  const durationDays = parseInt(
-    formData.get("duration_days") as string,
-    10,
-  );
+  const whatIncludes = (formData.get("includes") as string)?.trim() || null;
+  const whatExcludes = (formData.get("excludes") as string)?.trim() || null;
+  const durationDays = parseInt(formData.get("duration_days") as string, 10);
   const isNational = formData.get("is_national") === "on";
   const price = parseFloat(formData.get("price_cop") as string);
   const isActive = formData.get("is_active") === "on";
@@ -54,12 +49,8 @@ export async function createPaquete(
   let imageUrls: string[] = [];
 
   try {
-    destinationIds = JSON.parse(
-      (formData.get("destination_ids") as string) || "[]",
-    );
-    imageUrls = JSON.parse(
-      (formData.get("image_urls") as string) || "[]",
-    );
+    destinationIds = JSON.parse((formData.get("destination_ids") as string) || "[]");
+    imageUrls = JSON.parse((formData.get("image_urls") as string) || "[]");
   } catch {
     return {
       success: false,
@@ -154,34 +145,52 @@ export async function createPaquete(
 
   // Insert package_destinations
   if (destinationIds.length > 0) {
-    const { error: pdError } = await adminClient
-      .from("package_destinations")
-      .insert(
-        destinationIds.map((destId, i) => ({
-          package_id: pkg.id,
-          destination_id: destId,
-          display_order: i,
-        })),
-      );
+    const { error: pdError } = await adminClient.from("package_destinations").insert(
+      destinationIds.map((destId, i) => ({
+        package_id: pkg.id,
+        destination_id: destId,
+        display_order: i,
+      })),
+    );
 
     if (pdError) {
       return { success: false, error: pdError.message };
     }
   }
 
-  // Insert package_images (first is primary)
+  // Insert package_images (move staging uploads to final paths first)
   if (imageUrls.length > 0) {
-    const { error: piError } = await adminClient
-      .from("package_images")
-      .insert(
-        imageUrls.map((url, i) => ({
-          package_id: pkg.id,
-          url,
-          is_primary: i === 0,
-          display_order: i,
-          alt_text: null,
-        })),
-      );
+    const imageRows: {
+      package_id: string;
+      url: string;
+      is_primary: boolean;
+      display_order: number;
+      alt_text: null;
+    }[] = [];
+
+    for (let i = 0; i < imageUrls.length; i++) {
+      const path = imageUrls[i];
+      let finalPath = path;
+
+      if (path.startsWith("packages/staging/")) {
+        finalPath = `packages/${pkg.id}/${i}.webp`;
+        try {
+          await moveImage("package-images", path, finalPath);
+        } catch (moveErr) {
+          console.error("createPaquete: failed to move image to final path:", moveErr);
+        }
+      }
+
+      imageRows.push({
+        package_id: pkg.id,
+        url: finalPath,
+        is_primary: i === 0,
+        display_order: i,
+        alt_text: null,
+      });
+    }
+
+    const { error: piError } = await adminClient.from("package_images").insert(imageRows);
 
     if (piError) {
       return { success: false, error: piError.message };
@@ -210,14 +219,9 @@ export async function updatePaquete(
   const title = (formData.get("title") as string)?.trim();
   let slug = (formData.get("slug") as string)?.trim() || slugify(title ?? "");
   const description = (formData.get("description") as string)?.trim() || "";
-  const whatIncludes =
-    (formData.get("includes") as string)?.trim() || null;
-  const whatExcludes =
-    (formData.get("excludes") as string)?.trim() || null;
-  const durationDays = parseInt(
-    formData.get("duration_days") as string,
-    10,
-  );
+  const whatIncludes = (formData.get("includes") as string)?.trim() || null;
+  const whatExcludes = (formData.get("excludes") as string)?.trim() || null;
+  const durationDays = parseInt(formData.get("duration_days") as string, 10);
   const isNational = formData.get("is_national") === "on";
   const price = parseFloat(formData.get("price_cop") as string);
   const isActive = formData.get("is_active") === "on";
@@ -228,12 +232,8 @@ export async function updatePaquete(
   let imageUrls: string[] = [];
 
   try {
-    destinationIds = JSON.parse(
-      (formData.get("destination_ids") as string) || "[]",
-    );
-    imageUrls = JSON.parse(
-      (formData.get("image_urls") as string) || "[]",
-    );
+    destinationIds = JSON.parse((formData.get("destination_ids") as string) || "[]");
+    imageUrls = JSON.parse((formData.get("image_urls") as string) || "[]");
   } catch {
     return {
       success: false,
@@ -323,9 +323,7 @@ export async function updatePaquete(
       is_national: isNational,
       price,
       is_active: isActive,
-      published_at: publishNow
-        ? new Date().toISOString()
-        : undefined,
+      published_at: publishNow ? new Date().toISOString() : undefined,
       updated_at: new Date().toISOString(),
     })
     .eq("id", id);
@@ -335,45 +333,57 @@ export async function updatePaquete(
   }
 
   // Replace package_destinations
-  await adminClient
-    .from("package_destinations")
-    .delete()
-    .eq("package_id", id);
+  await adminClient.from("package_destinations").delete().eq("package_id", id);
 
   if (destinationIds.length > 0) {
-    const { error: pdError } = await adminClient
-      .from("package_destinations")
-      .insert(
-        destinationIds.map((destId, i) => ({
-          package_id: id,
-          destination_id: destId,
-          display_order: i,
-        })),
-      );
+    const { error: pdError } = await adminClient.from("package_destinations").insert(
+      destinationIds.map((destId, i) => ({
+        package_id: id,
+        destination_id: destId,
+        display_order: i,
+      })),
+    );
 
     if (pdError) {
       return { success: false, error: pdError.message };
     }
   }
 
-  // Replace package_images
-  await adminClient
-    .from("package_images")
-    .delete()
-    .eq("package_id", id);
+  // Replace package_images (move staging uploads to final paths first)
+  await adminClient.from("package_images").delete().eq("package_id", id);
 
   if (imageUrls.length > 0) {
-    const { error: piError } = await adminClient
-      .from("package_images")
-      .insert(
-        imageUrls.map((url, i) => ({
-          package_id: id,
-          url,
-          is_primary: i === 0,
-          display_order: i,
-          alt_text: null,
-        })),
-      );
+    const imageRows: {
+      package_id: string;
+      url: string;
+      is_primary: boolean;
+      display_order: number;
+      alt_text: null;
+    }[] = [];
+
+    for (let i = 0; i < imageUrls.length; i++) {
+      const path = imageUrls[i];
+      let finalPath = path;
+
+      if (path.startsWith("packages/staging/")) {
+        finalPath = `packages/${id}/${i}.webp`;
+        try {
+          await moveImage("package-images", path, finalPath);
+        } catch (moveErr) {
+          console.error("updatePaquete: failed to move image to final path:", moveErr);
+        }
+      }
+
+      imageRows.push({
+        package_id: id,
+        url: finalPath,
+        is_primary: i === 0,
+        display_order: i,
+        alt_text: null,
+      });
+    }
+
+    const { error: piError } = await adminClient.from("package_images").insert(imageRows);
 
     if (piError) {
       return { success: false, error: piError.message };
@@ -478,6 +488,7 @@ export async function togglePublish(
 export type UploadImageResult = {
   success: boolean;
   url?: string;
+  path?: string;
   error?: string;
 };
 
@@ -511,15 +522,14 @@ export async function uploadPaqueteImage(
   }
 
   try {
-    const url = await uploadImage("paquetes", file);
-    return { success: true, url };
+    const stagingPath = `packages/staging/${crypto.randomUUID()}.webp`;
+    const path = await uploadImage("package-images", file, stagingPath);
+    const url = getPublicUrl("package-images", path);
+    return { success: true, path, url };
   } catch (err) {
     return {
       success: false,
-      error:
-        err instanceof Error
-          ? err.message
-          : "Error al subir la imagen.",
+      error: err instanceof Error ? err.message : "Error al subir la imagen.",
     };
   }
 }
