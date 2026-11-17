@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
@@ -28,11 +29,12 @@ export default async function PerfilPage({ params }: { params: Promise<{ locale:
 
         {profile?.avatar_url && (
           <div className="mb-4">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={profile.avatar_url}
-              alt="Avatar"
-              className="h-24 w-24 rounded-full object-cover"
+              alt=""
+              width={96}
+              height={96}
+              className="rounded-full object-cover"
             />
           </div>
         )}

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useActionState, useState } from "react";
 
 /* ──────────────────────────────────────────────
@@ -72,11 +73,14 @@ export function ImageUploader({ initialUrl, action, onSuccess, labels }: ImageUp
     <div className="space-y-3">
       {/* ── Preview ──────────────────────────── */}
       {preview ? (
-        <div className="relative inline-block">
-          <img
+        <div className="relative inline-block h-40 w-60">
+          <Image
             src={preview}
             alt="Preview"
-            className="h-40 w-60 rounded-lg border border-border object-cover"
+            width={240}
+            height={160}
+            unoptimized={preview.startsWith("data:") || preview.startsWith("blob:")}
+            className="rounded-lg border border-border object-cover"
           />
           <button
             type="button"

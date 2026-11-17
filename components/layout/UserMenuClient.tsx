@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/lib/i18n/navigation";
@@ -65,8 +66,13 @@ export function UserMenuClient({ fullName, role, avatarUrl }: UserMenuClientProp
         className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:bg-surface"
       >
         {avatarUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={avatarUrl} alt="" className="h-6 w-6 rounded-full object-cover" />
+          <Image
+            src={avatarUrl}
+            alt=""
+            width={24}
+            height={24}
+            className="rounded-full object-cover"
+          />
         ) : (
           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
             {fullName?.charAt(0).toUpperCase() ?? "?"}

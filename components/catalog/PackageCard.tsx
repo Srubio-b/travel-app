@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
 import { formatCOP } from "@/lib/format/currency";
@@ -17,13 +18,14 @@ export async function PackageCard({ pkg }: PackageCardProps) {
   return (
     <article className="group">
       <Link href={`/paquetes/${pkg.slug}`} className="block">
-        <div className="aspect-[4/5] w-full overflow-hidden rounded-sm bg-surface">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-sm bg-surface">
+          <Image
             src={pkg.primaryImage?.url ?? FALLBACK_IMAGES.card}
             alt={pkg.primaryImage?.altText ?? pkg.title}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             loading="lazy"
-            className="h-full w-full object-cover transition-all duration-500 group-hover:scale-105"
+            className="object-cover transition-all duration-500 group-hover:scale-105"
           />
         </div>
       </Link>

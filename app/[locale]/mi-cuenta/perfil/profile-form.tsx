@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useActionState, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { updateProfile } from "@/app/actions/auth";
@@ -61,11 +62,13 @@ export function ProfileForm({ defaultName, defaultPhone, avatarUrl }: Props) {
           <label className="mb-1 block text-sm font-medium">{t("avatarLabel")}</label>
 
           {avatarPreview && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={avatarPreview}
-              alt="Vista previa"
-              className="mb-2 h-20 w-20 rounded-full object-cover"
+              alt=""
+              width={80}
+              height={80}
+              unoptimized={avatarPreview.startsWith("data:") || avatarPreview.startsWith("blob:")}
+              className="mb-2 rounded-full object-cover"
             />
           )}
 

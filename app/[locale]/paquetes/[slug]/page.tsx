@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
@@ -76,12 +77,14 @@ export default async function PackageDetailPage({ params }: PackageDetailPagePro
 
       {/* ───── Hero image ───── */}
       <section className="container-page pt-8 sm:pt-12">
-        <div className="aspect-[16/9] w-full overflow-hidden rounded-sm bg-surface sm:aspect-[21/9]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-sm bg-surface sm:aspect-[21/9]">
+          <Image
             src={primaryImage?.url ?? FALLBACK_IMAGES.destinationHero}
             alt={primaryImage?.altText ?? pkg.title}
-            className="h-full w-full object-cover"
+            fill
+            priority
+            sizes="(max-width: 1280px) 100vw, 1280px"
+            className="object-cover"
           />
         </div>
 
@@ -89,13 +92,17 @@ export default async function PackageDetailPage({ params }: PackageDetailPagePro
         {otherImages.length > 0 && (
           <div className="mt-2 grid grid-cols-4 gap-2 sm:grid-cols-5" aria-label={t("gallery")}>
             {otherImages.map((img) => (
-              <div key={img.url} className="aspect-square overflow-hidden rounded-sm bg-surface">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+              <div
+                key={img.url}
+                className="relative aspect-square overflow-hidden rounded-sm bg-surface"
+              >
+                <Image
                   src={img.url}
                   alt={img.altText ?? pkg.title}
+                  fill
+                  sizes="(max-width: 640px) 25vw, 20vw"
                   loading="lazy"
-                  className="h-full w-full object-cover"
+                  className="object-cover"
                 />
               </div>
             ))}

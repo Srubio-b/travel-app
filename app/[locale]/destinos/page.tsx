@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
@@ -44,13 +45,14 @@ export default async function DestinosPage() {
             {destinations.map((dest) => (
               <Link key={dest.slug} href={`/destinos/${dest.slug}`} className="group block">
                 <article>
-                  <div className="aspect-[4/5] w-full overflow-hidden rounded-sm bg-surface">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                  <div className="relative aspect-[4/5] w-full overflow-hidden rounded-sm bg-surface">
+                    <Image
                       src={dest.imageUrl ?? FALLBACK_IMAGES.card}
                       alt={dest.name}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       loading="lazy"
-                      className="h-full w-full object-cover transition-all duration-500 group-hover:scale-105"
+                      className="object-cover transition-all duration-500 group-hover:scale-105"
                     />
                   </div>
                   <div className="mt-4 space-y-1">
