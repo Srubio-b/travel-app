@@ -1,16 +1,12 @@
+import type { ActionResult } from "@/types";
+
 /**
- * Typed auth operation results.
+ * Auth operation result — a specialisation of `ActionResult` that can carry
+ * a confirmation message on success (e.g. email verification pending).
  *
- * Every Server Action returns an `AuthResult` so the caller can reliably
- * distinguish success from failure without inspecting thrown exceptions.
- *
- * `field` is optional — when present, it hints the form which input to
- * highlight. The string value corresponds to a `FormData` key name.
- * `message` is optional on success — used when the action didn't fully
- * complete (e.g. email confirmation required) but is not an error.
+ * `field` is optional on errors and hints the form which input to highlight.
  */
-export type AuthResult =
-  { success: true; message?: string } | { success: false; error: string; field?: string };
+export type AuthResult = ActionResult<{ message?: string }>;
 
 /**
  * Maps raw Supabase auth error messages to user-safe, localised strings.

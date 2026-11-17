@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import type { AuthResult } from "@/lib/auth/errors";
 import { mapAuthError } from "@/lib/auth/errors";
+import { mapSupabaseError } from "@/lib/supabase/errors";
 import type { Database } from "@/lib/supabase/database.types";
 
 /* ──────────────────────────────────────────────
@@ -115,7 +116,7 @@ export async function register(_prev: AuthResult | null, formData: FormData): Pr
   if (!data.session) {
     return {
       success: true,
-      message: "Revisá tu email para confirmar la cuenta.",
+      data: { message: "Revisá tu email para confirmar la cuenta." },
     };
   }
 
@@ -150,6 +151,7 @@ export async function updateProfile(
   formData: FormData,
 ): Promise<AuthResult> {
   const supabase = await createClient();
+  const locale = await getLocale();
 
   const {
     data: { user },
@@ -187,7 +189,7 @@ export async function updateProfile(
   const { error } = await supabase.from("profiles").update(updates).eq("id", user.id);
 
   if (error) {
-    return { success: false, error: error.message };
+    return { success: false, error: mapSupabaseError(error, locale) };
   }
 
   revalidatePath("/", "layout");
@@ -203,6 +205,7 @@ export async function uploadAvatar(
   formData: FormData,
 ): Promise<AuthResult> {
   const supabase = await createClient();
+  const locale = await getLocale();
 
   const {
     data: { user },
@@ -252,7 +255,7 @@ export async function uploadAvatar(
     .upload(fileName, file, { upsert: true });
 
   if (uploadError) {
-    return { success: false, error: uploadError.message };
+    return { success: false, error: mapSupabaseError(uploadError, locale) };
   }
 
   const {
@@ -265,7 +268,7 @@ export async function uploadAvatar(
     .eq("id", user.id);
 
   if (updateError) {
-    return { success: false, error: updateError.message };
+    return { success: false, error: mapSupabaseError(updateError, locale) };
   }
 
   revalidatePath("/", "layout");

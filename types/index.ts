@@ -44,18 +44,20 @@ export interface Destination {
   deleted_at: string | null;
 }
 
-// ── Shared Admin Action Result ──────────────────────────────
+// ── Shared Server Action Result ─────────────────────────────
 
 /**
- * Return type for all admin Server Actions.
+ * Discriminated union for all Server Action results.
  *
- * Mirrors the AuthResult pattern but adds an optional `data` field
- * that carries the created/updated entity's id so the caller can
- * redirect or reference it.
+ * The generic `T` is the payload returned on success. Errors always carry
+ * a safe, localised string and an optional `field` hint for form-level
+ * highlighting.
  */
-export type ActionResult =
-  | { success: true; message?: string; data?: { id: string } }
-  | { success: false; error: string; field?: string };
+export type ActionResult<T = void> =
+  { success: true; data?: T } | { success: false; error: string; field?: string };
+
+/** Alias for auth-specific actions that may return a confirmation message. */
+export type AuthResult = ActionResult<{ message?: string }>;
 
 // ── Travel Packages ────────────────────────────────────────
 

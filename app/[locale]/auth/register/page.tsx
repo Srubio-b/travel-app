@@ -32,7 +32,7 @@ export default function RegisterPage() {
   }
 
   // Success but email confirmation needed
-  if (state?.success && state?.message) {
+  if (state?.success && state?.data?.message) {
     return (
       <main className="mx-auto max-w-md px-4 py-16">
         <h1 className="mb-8 text-3xl font-bold">{t("title")}</h1>

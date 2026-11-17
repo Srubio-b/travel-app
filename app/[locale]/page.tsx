@@ -4,10 +4,12 @@ import { createClient } from "@/lib/supabase/server";
 import { listPackages } from "@/lib/supabase/queries";
 import { Link } from "@/lib/i18n/navigation";
 import { FALLBACK_IMAGES } from "@/lib/config/images";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/lib/supabase/database.types";
+import type { PackageCardData } from "@/lib/supabase/queries";
 
-async function getFeaturedPackages() {
+async function getFeaturedPackages(supabase: SupabaseClient<Database>): Promise<PackageCardData[]> {
   try {
-    const supabase = await createClient();
     return await listPackages(supabase, { limit: 3 });
   } catch {
     return [];
@@ -15,7 +17,11 @@ async function getFeaturedPackages() {
 }
 
 export default async function HomePage() {
-  const [t, featuredPackages] = await Promise.all([getTranslations("home"), getFeaturedPackages()]);
+  const supabase = await createClient();
+  const [t, featuredPackages] = await Promise.all([
+    getTranslations("home"),
+    getFeaturedPackages(supabase),
+  ]);
 
   return (
     <PublicLayout>

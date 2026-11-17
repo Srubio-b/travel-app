@@ -7,8 +7,8 @@ import type { ReactNode } from "react";
  * ────────────────────────────────────────────── */
 
 export type Column<T> = {
-  /** Unique key matching a property on T */
-  key: string;
+  /** Unique key matching a string property on T */
+  key: Extract<keyof T, string>;
   /** Translated column label (passed from Server Component) */
   label: string;
   /** Custom renderer. Defaults to `String(row[key])` */
@@ -98,10 +98,8 @@ export function AdminTable<T extends { id: string }>({
               {data.map((row) => (
                 <tr key={row.id} className="transition-colors hover:bg-surface">
                   {columns.map((col) => (
-                    <td key={col.key} className="px-4 py-3">
-                      {col.render
-                        ? col.render(row)
-                        : String((row as Record<string, unknown>)[col.key] ?? "")}
+                    <td key={String(col.key)} className="px-4 py-3">
+                      {col.render ? col.render(row) : String(row[col.key] ?? "")}
                     </td>
                   ))}
                   {(onEdit || onDelete || actions) && (
