@@ -54,20 +54,57 @@ travel-app/
 pnpm install
 
 # Copiar variables de entorno
-cp .env.local.example .env.local  # o crear .env.local manualmente
+cp .env.example .env.local  # o crear .env.local manualmente
 
 # Iniciar servidor de desarrollo
 pnpm dev
 ```
 
+## Environment Variables
+
+Crea un archivo `.env.local` con las siguientes variables:
+
+| Variable                        | Origen / Valor esperado                               | Ámbito   |
+| ------------------------------- | ----------------------------------------------------- | -------- |
+| `NEXT_PUBLIC_SITE_URL`          | URL pública del sitio, p. ej. `http://localhost:3000` | Público  |
+| `NEXT_PUBLIC_SUPABASE_URL`      | URL del proyecto Supabase                             | Público  |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Anon key del proyecto Supabase                        | Público  |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Service role key (secreto, solo servidor)             | Servidor |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER`   | Número de WhatsApp en formato internacional sin `+`   | Público  |
+
+> `.env.local` está en `.gitignore` y nunca debe commitearse.
+
 ## Scripts Disponibles
 
 ```bash
-pnpm dev      # Servidor de desarrollo (http://localhost:3000)
-pnpm build    # Build de producción
-pnpm start    # Iniciar servidor de producción
-pnpm lint     # Linter ESLint
+pnpm dev            # Servidor de desarrollo (http://localhost:3000)
+pnpm build          # Build de producción
+pnpm start          # Iniciar servidor de producción
+pnpm lint           # Linter ESLint
+pnpm typecheck      # Verificación de tipos TypeScript
+pnpm format         # Formatear con Prettier
+pnpm format:check   # Validar formato con Prettier
+pnpm verify         # typecheck + lint + format:check
 ```
+
+## Deploy
+
+El proyecto está pensado para desplegarse en **Vercel**:
+
+```bash
+# 1. Verificar variables de entorno
+# 2. Aplicar migraciones de Supabase
+# 3. Build de producción
+pnpm verify
+pnpm build
+```
+
+Pasos sugeridos en Vercel:
+
+1. Conectar el repositorio de GitHub.
+2. Agregar las variables de entorno listadas arriba en Project Settings.
+3. Establecer el framework preset como **Next.js**.
+4. Desplegar. El comando de build por defecto es `pnpm build`.
 
 ## Desarrollo
 

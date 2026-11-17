@@ -58,6 +58,12 @@ export type DestinoFormFieldsProps = {
  * Component
  * ────────────────────────────────────────────── */
 
+function getPublicImageUrl(path: string): string {
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!base) return path;
+  return `${base}/storage/v1/object/public/package-images/${path}`;
+}
+
 export function DestinoFormFields({
   action,
   uploadAction,
@@ -66,7 +72,7 @@ export function DestinoFormFields({
   backHref,
 }: DestinoFormFieldsProps) {
   const [state, formAction, isPending] = useActionState(action, null);
-  const [imageUrl, setImageUrl] = useState<string | null>(initialData?.image_url ?? null);
+  const [imagePath, setImagePath] = useState<string | null>(initialData?.image_url ?? null);
 
   // Slug auto-generation tracking
   const [name, setName] = useState(initialData?.name ?? "");
@@ -86,15 +92,15 @@ export function DestinoFormFields({
     setSlug(e.target.value);
   };
 
-  const handleImageSuccess = (url: string) => {
-    setImageUrl(url);
+  const handleImageSuccess = (info: { url: string; path: string }) => {
+    setImagePath(info.path);
   };
 
   return (
     <form action={formAction}>
       {/* Hidden fields */}
       {initialData?.id && <input type="hidden" name="id" value={initialData.id} />}
-      <input type="hidden" name="image_url" value={imageUrl ?? ""} />
+      <input type="hidden" name="image_url" value={imagePath ?? ""} />
 
       <AdminFormLayout
         title={labels.title}
@@ -184,7 +190,7 @@ export function DestinoFormFields({
         <div>
           <label className="mb-1 block text-sm font-medium text-fg">{labels.image}</label>
           <ImageUploader
-            initialUrl={initialData?.image_url ?? undefined}
+            initialUrl={imagePath ? getPublicImageUrl(imagePath) : undefined}
             action={uploadAction}
             onSuccess={handleImageSuccess}
             labels={{

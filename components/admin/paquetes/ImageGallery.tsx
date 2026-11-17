@@ -4,15 +4,25 @@ import { useActionState, useState } from "react";
 import type { UploadImageResult } from "@/app/actions/admin/paquetes";
 
 /* ──────────────────────────────────────────────
+ * Helpers
+ * ────────────────────────────────────────────── */
+
+function getPublicImageUrl(path: string): string {
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!base) return path;
+  return `${base}/storage/v1/object/public/package-images/${path}`;
+}
+
+/* ──────────────────────────────────────────────
  * Types
  * ────────────────────────────────────────────── */
 
 export type ImageGalleryProps = {
-  /** Current image URLs in the gallery */
+  /** Current relative image paths in the gallery */
   images: string[];
   /** Called when the gallery list changes (add/remove/reorder) */
-  onChange: (urls: string[]) => void;
-  /** Server Action to upload a file to the paquetes bucket */
+  onChange: (paths: string[]) => void;
+  /** Server Action to upload a file to the package-images bucket */
   uploadAction: (prev: UploadImageResult | null, formData: FormData) => Promise<UploadImageResult>;
   /** Translated labels */
   labels: {
@@ -34,9 +44,9 @@ export function ImageGallery({ images, onChange, uploadAction, labels }: ImageGa
   const [state, formAction, isPending] = useActionState(uploadAction, null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  // When an upload succeeds, add the URL to the gallery
-  if (state?.success && state.url && !images.includes(state.url)) {
-    onChange([...images, state.url]);
+  // When an upload succeeds, add the relative path to the gallery
+  if (state?.success && state.path && !images.includes(state.path)) {
+    onChange([...images, state.path]);
     setSelectedFile(null);
   }
 
@@ -44,8 +54,8 @@ export function ImageGallery({ images, onChange, uploadAction, labels }: ImageGa
     setSelectedFile(e.target.files?.[0] ?? null);
   };
 
-  const handleRemove = (url: string) => {
-    onChange(images.filter((u) => u !== url));
+  const handleRemove = (path: string) => {
+    onChange(images.filter((p) => p !== path));
   };
 
   return (
@@ -53,10 +63,10 @@ export function ImageGallery({ images, onChange, uploadAction, labels }: ImageGa
       {/* ── Image grid ───────────────────────── */}
       {images.length > 0 && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-          {images.map((url, i) => (
-            <div key={url} className="group relative">
+          {images.map((path, i) => (
+            <div key={path} className="group relative">
               <img
-                src={url}
+                src={getPublicImageUrl(path)}
                 alt={labels.alt.replace("{n}", (i + 1).toString())}
                 className="h-28 w-full rounded-lg border border-border object-cover"
               />
@@ -69,7 +79,7 @@ export function ImageGallery({ images, onChange, uploadAction, labels }: ImageGa
               {/* Remove button */}
               <button
                 type="button"
-                onClick={() => handleRemove(url)}
+                onClick={() => handleRemove(path)}
                 className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-bg text-xs text-muted-foreground opacity-0 transition-opacity hover:bg-destructive-subtle hover:text-destructive group-hover:opacity-100"
                 aria-label={labels.remove}
               >

@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/auth/utils";
 import { slugify } from "@/lib/utils/slug";
-import { uploadImage } from "@/lib/supabase/storage";
+import { getPublicUrl, moveImage, uploadImage } from "@/lib/supabase/storage";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
@@ -158,17 +158,39 @@ export async function createPaquete(
     }
   }
 
-  // Insert package_images (first is primary)
+  // Insert package_images (move staging uploads to final paths first)
   if (imageUrls.length > 0) {
-    const { error: piError } = await adminClient.from("package_images").insert(
-      imageUrls.map((url, i) => ({
+    const imageRows: {
+      package_id: string;
+      url: string;
+      is_primary: boolean;
+      display_order: number;
+      alt_text: null;
+    }[] = [];
+
+    for (let i = 0; i < imageUrls.length; i++) {
+      const path = imageUrls[i];
+      let finalPath = path;
+
+      if (path.startsWith("packages/staging/")) {
+        finalPath = `packages/${pkg.id}/${i}.webp`;
+        try {
+          await moveImage("package-images", path, finalPath);
+        } catch (moveErr) {
+          console.error("createPaquete: failed to move image to final path:", moveErr);
+        }
+      }
+
+      imageRows.push({
         package_id: pkg.id,
-        url,
+        url: finalPath,
         is_primary: i === 0,
         display_order: i,
         alt_text: null,
-      })),
-    );
+      });
+    }
+
+    const { error: piError } = await adminClient.from("package_images").insert(imageRows);
 
     if (piError) {
       return { success: false, error: piError.message };
@@ -327,19 +349,41 @@ export async function updatePaquete(
     }
   }
 
-  // Replace package_images
+  // Replace package_images (move staging uploads to final paths first)
   await adminClient.from("package_images").delete().eq("package_id", id);
 
   if (imageUrls.length > 0) {
-    const { error: piError } = await adminClient.from("package_images").insert(
-      imageUrls.map((url, i) => ({
+    const imageRows: {
+      package_id: string;
+      url: string;
+      is_primary: boolean;
+      display_order: number;
+      alt_text: null;
+    }[] = [];
+
+    for (let i = 0; i < imageUrls.length; i++) {
+      const path = imageUrls[i];
+      let finalPath = path;
+
+      if (path.startsWith("packages/staging/")) {
+        finalPath = `packages/${id}/${i}.webp`;
+        try {
+          await moveImage("package-images", path, finalPath);
+        } catch (moveErr) {
+          console.error("updatePaquete: failed to move image to final path:", moveErr);
+        }
+      }
+
+      imageRows.push({
         package_id: id,
-        url,
+        url: finalPath,
         is_primary: i === 0,
         display_order: i,
         alt_text: null,
-      })),
-    );
+      });
+    }
+
+    const { error: piError } = await adminClient.from("package_images").insert(imageRows);
 
     if (piError) {
       return { success: false, error: piError.message };
@@ -444,6 +488,7 @@ export async function togglePublish(
 export type UploadImageResult = {
   success: boolean;
   url?: string;
+  path?: string;
   error?: string;
 };
 
@@ -477,8 +522,10 @@ export async function uploadPaqueteImage(
   }
 
   try {
-    const url = await uploadImage("paquetes", file);
-    return { success: true, url };
+    const stagingPath = `packages/staging/${crypto.randomUUID()}.webp`;
+    const path = await uploadImage("package-images", file, stagingPath);
+    const url = getPublicUrl("package-images", path);
+    return { success: true, path, url };
   } catch (err) {
     return {
       success: false,

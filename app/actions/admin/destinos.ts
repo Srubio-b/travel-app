@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/auth/utils";
 import { slugify } from "@/lib/utils/slug";
-import { uploadImage } from "@/lib/supabase/storage";
+import { getPublicUrl, moveImage, uploadImage } from "@/lib/supabase/storage";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
@@ -90,6 +90,17 @@ export async function createDestino(
     return { success: false, error: error.message };
   }
 
+  // Move staging image to its final path after the destination ID is known.
+  if (data && imageUrl?.startsWith("destinations/staging/")) {
+    const finalPath = `destinations/${data.id}.webp`;
+    try {
+      await moveImage("package-images", imageUrl, finalPath);
+      await adminClient.from("destinations").update({ image_url: finalPath }).eq("id", data.id);
+    } catch (moveErr) {
+      console.error("createDestino: failed to move image to final path:", moveErr);
+    }
+  }
+
   revalidatePath(`/${locale}/admin/destinos`);
   redirect(`/${locale}/admin/destinos`);
 }
@@ -169,6 +180,17 @@ export async function updateDestino(
     return { success: false, error: error.message };
   }
 
+  // Move a re-uploaded staging image to its final path.
+  if (imageUrl?.startsWith("destinations/staging/")) {
+    const finalPath = `destinations/${id}.webp`;
+    try {
+      await moveImage("package-images", imageUrl, finalPath);
+      await adminClient.from("destinations").update({ image_url: finalPath }).eq("id", id);
+    } catch (moveErr) {
+      console.error("updateDestino: failed to move image to final path:", moveErr);
+    }
+  }
+
   revalidatePath(`/${locale}/admin/destinos`);
   redirect(`/${locale}/admin/destinos`);
 }
@@ -213,6 +235,7 @@ export async function deleteDestino(
 export type UploadImageResult = {
   success: boolean;
   url?: string;
+  path?: string;
   error?: string;
 };
 
@@ -246,8 +269,10 @@ export async function uploadDestinoImage(
   }
 
   try {
-    const url = await uploadImage("destinos", file);
-    return { success: true, url };
+    const stagingPath = `destinations/staging/${crypto.randomUUID()}.webp`;
+    const path = await uploadImage("package-images", file, stagingPath);
+    const url = getPublicUrl("package-images", path);
+    return { success: true, path, url };
   } catch (err) {
     return {
       success: false,
