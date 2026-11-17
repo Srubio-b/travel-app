@@ -2,8 +2,28 @@ import createI18nMiddleware from "next-intl/middleware";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { routing } from "@/lib/i18n/routing";
+import type { Database } from "@/lib/supabase/database.types";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 const i18nMiddleware = createI18nMiddleware(routing);
+
+async function getUserRoleName(supabase: SupabaseClient<Database>): Promise<string | null> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  const { data, error } = await supabase
+    .from("user_roles")
+    .select("role_id, roles!inner(name)")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (error) return null;
+
+  return (data?.roles as { name: string } | undefined)?.name ?? null;
+}
 
 export async function middleware(request: NextRequest) {
   // ---------------------------------------------------------------
@@ -17,7 +37,7 @@ export async function middleware(request: NextRequest) {
   // ---------------------------------------------------------------
   const response = NextResponse.next({ request });
 
-  const supabase = createServerClient(
+  const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -36,15 +56,21 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const role = user ? await getUserRoleName(supabase) : null;
+
   const path = request.nextUrl.pathname;
   const locale = request.nextUrl.locale || routing.defaultLocale;
 
-  // Protected: /[locale]/admin/* → must be authenticated (role check delegated to layout)
+  // Protected: /[locale]/admin/* → must be authenticated and have admin role
   if (path === `/${locale}/admin` || path.startsWith(`/${locale}/admin/`)) {
     if (!user) {
       const loginUrl = new URL(`/${locale}/auth/login`, request.url);
       loginUrl.searchParams.set("redirect", path);
       return NextResponse.redirect(loginUrl);
+    }
+
+    if (role !== "admin") {
+      return NextResponse.redirect(new URL(`/${locale}`, request.url));
     }
   }
 

@@ -1,234 +1,204 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/auth/utils";
 import { slugify } from "@/lib/utils/slug";
 import { getPublicUrl, moveImage, uploadImage } from "@/lib/supabase/storage";
 import { mapSupabaseError } from "@/lib/supabase/errors";
 import { logQueryError } from "@/lib/logger";
+import { withAdminAction } from "./_shared";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import type { ActionResult } from "@/types";
 
 /* ──────────────────────────────────────────────
- * Helpers
- * ────────────────────────────────────────────── */
-
-async function getLocale(): Promise<string> {
-  const cookieStore = await cookies();
-  return cookieStore.get("NEXT_LOCALE")?.value ?? "es";
-}
-
-/* ──────────────────────────────────────────────
  * Create
  * ────────────────────────────────────────────── */
 
-export async function createDestino(
-  _prev: ActionResult | null,
-  formData: FormData,
-): Promise<ActionResult> {
-  const userClient = await createClient();
-  const locale = await getLocale();
-  await requireAdmin(userClient, locale);
+export const createDestino = withAdminAction<ActionResult>(
+  async ({ locale, adminClient }, formData) => {
+    const name = (formData.get("name") as string)?.trim();
+    let slug = (formData.get("slug") as string)?.trim() || slugify(name ?? "");
+    const description = (formData.get("description") as string)?.trim() || null;
+    const country = (formData.get("country") as string)?.trim();
+    const region = (formData.get("region") as string)?.trim() || null;
+    const isActive = formData.get("is_active") === "on";
+    const imageUrl = (formData.get("image_url") as string) || null;
+    const metaTitle = (formData.get("meta_title") as string)?.trim() || null;
+    const metaDescription = (formData.get("meta_description") as string)?.trim() || null;
 
-  const adminClient = createAdminClient();
-
-  const name = (formData.get("name") as string)?.trim();
-  let slug = (formData.get("slug") as string)?.trim() || slugify(name ?? "");
-  const description = (formData.get("description") as string)?.trim() || null;
-  const country = (formData.get("country") as string)?.trim();
-  const region = (formData.get("region") as string)?.trim() || null;
-  const isActive = formData.get("is_active") === "on";
-  const imageUrl = (formData.get("image_url") as string) || null;
-  const metaTitle = (formData.get("meta_title") as string)?.trim() || null;
-  const metaDescription = (formData.get("meta_description") as string)?.trim() || null;
-
-  // Validation
-  if (!name || name.length === 0) {
-    return { success: false, error: "El nombre es requerido.", field: "name" };
-  }
-  if (!country || country.length === 0) {
-    return { success: false, error: "El país es requerido.", field: "country" };
-  }
-  if (!slug || slug.length === 0) {
-    slug = slugify(name);
-  }
-
-  // Slug uniqueness check
-  const { data: existing } = await adminClient
-    .from("destinations")
-    .select("id")
-    .eq("slug", slug)
-    .is("deleted_at", null)
-    .maybeSingle();
-
-  if (existing) {
-    return {
-      success: false,
-      error: "Ya existe un destino con ese slug.",
-      field: "slug",
-    };
-  }
-
-  const { data, error } = await adminClient
-    .from("destinations")
-    .insert({
-      name,
-      slug,
-      description,
-      country,
-      region,
-      image_url: imageUrl,
-      is_active: isActive,
-      meta_title: metaTitle,
-      meta_description: metaDescription,
-    })
-    .select("id")
-    .single();
-
-  if (error) {
-    return { success: false, error: mapSupabaseError(error, locale) };
-  }
-
-  // Move staging image to its final path after the destination ID is known.
-  if (data && imageUrl?.startsWith("destinations/staging/")) {
-    const finalPath = `destinations/${data.id}.webp`;
-    try {
-      await moveImage("package-images", imageUrl, finalPath);
-      await adminClient.from("destinations").update({ image_url: finalPath }).eq("id", data.id);
-    } catch (moveErr) {
-      logQueryError("createDestino:moveImage", moveErr);
+    // Validation
+    if (!name || name.length === 0) {
+      return { success: false, error: "El nombre es requerido.", field: "name" };
     }
-  }
+    if (!country || country.length === 0) {
+      return { success: false, error: "El país es requerido.", field: "country" };
+    }
+    if (!slug || slug.length === 0) {
+      slug = slugify(name);
+    }
 
-  revalidatePath(`/${locale}/admin/destinos`);
-  redirect(`/${locale}/admin/destinos`);
-}
+    // Slug uniqueness check
+    const { data: existing } = await adminClient
+      .from("destinations")
+      .select("id")
+      .eq("slug", slug)
+      .is("deleted_at", null)
+      .maybeSingle();
+
+    if (existing) {
+      return {
+        success: false,
+        error: "Ya existe un destino con ese slug.",
+        field: "slug",
+      };
+    }
+
+    const { data, error } = await adminClient
+      .from("destinations")
+      .insert({
+        name,
+        slug,
+        description,
+        country,
+        region,
+        image_url: imageUrl,
+        is_active: isActive,
+        meta_title: metaTitle,
+        meta_description: metaDescription,
+      })
+      .select("id")
+      .single();
+
+    if (error) {
+      return { success: false, error: mapSupabaseError(error, locale) };
+    }
+
+    // Move staging image to its final path after the destination ID is known.
+    if (data && imageUrl?.startsWith("destinations/staging/")) {
+      const finalPath = `destinations/${data.id}.webp`;
+      try {
+        await moveImage("package-images", imageUrl, finalPath);
+        await adminClient.from("destinations").update({ image_url: finalPath }).eq("id", data.id);
+      } catch (moveErr) {
+        logQueryError("createDestino:moveImage", moveErr);
+      }
+    }
+
+    revalidatePath(`/${locale}/admin/destinos`);
+    redirect(`/${locale}/admin/destinos`);
+  },
+);
 
 /* ──────────────────────────────────────────────
  * Update
  * ────────────────────────────────────────────── */
 
-export async function updateDestino(
-  _prev: ActionResult | null,
-  formData: FormData,
-): Promise<ActionResult> {
-  const userClient = await createClient();
-  const locale = await getLocale();
-  await requireAdmin(userClient, locale);
+export const updateDestino = withAdminAction<ActionResult>(
+  async ({ locale, adminClient }, formData) => {
+    const id = formData.get("id") as string;
+    const name = (formData.get("name") as string)?.trim();
+    let slug = (formData.get("slug") as string)?.trim() || slugify(name ?? "");
+    const description = (formData.get("description") as string)?.trim() || null;
+    const country = (formData.get("country") as string)?.trim();
+    const region = (formData.get("region") as string)?.trim() || null;
+    const isActive = formData.get("is_active") === "on";
+    const imageUrl = (formData.get("image_url") as string) || null;
+    const metaTitle = (formData.get("meta_title") as string)?.trim() || null;
+    const metaDescription = (formData.get("meta_description") as string)?.trim() || null;
 
-  const adminClient = createAdminClient();
-
-  const id = formData.get("id") as string;
-  const name = (formData.get("name") as string)?.trim();
-  let slug = (formData.get("slug") as string)?.trim() || slugify(name ?? "");
-  const description = (formData.get("description") as string)?.trim() || null;
-  const country = (formData.get("country") as string)?.trim();
-  const region = (formData.get("region") as string)?.trim() || null;
-  const isActive = formData.get("is_active") === "on";
-  const imageUrl = (formData.get("image_url") as string) || null;
-  const metaTitle = (formData.get("meta_title") as string)?.trim() || null;
-  const metaDescription = (formData.get("meta_description") as string)?.trim() || null;
-
-  if (!id) {
-    return { success: false, error: "ID de destino no proporcionado." };
-  }
-  if (!name || name.length === 0) {
-    return { success: false, error: "El nombre es requerido.", field: "name" };
-  }
-  if (!country || country.length === 0) {
-    return { success: false, error: "El país es requerido.", field: "country" };
-  }
-  if (!slug || slug.length === 0) {
-    slug = slugify(name);
-  }
-
-  // Slug uniqueness check (exclude current)
-  const { data: existing } = await adminClient
-    .from("destinations")
-    .select("id")
-    .eq("slug", slug)
-    .is("deleted_at", null)
-    .neq("id", id)
-    .maybeSingle();
-
-  if (existing) {
-    return {
-      success: false,
-      error: "Ya existe otro destino con ese slug.",
-      field: "slug",
-    };
-  }
-
-  const { error } = await adminClient
-    .from("destinations")
-    .update({
-      name,
-      slug,
-      description,
-      country,
-      region,
-      image_url: imageUrl,
-      is_active: isActive,
-      meta_title: metaTitle,
-      meta_description: metaDescription,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", id);
-
-  if (error) {
-    return { success: false, error: mapSupabaseError(error, locale) };
-  }
-
-  // Move a re-uploaded staging image to its final path.
-  if (imageUrl?.startsWith("destinations/staging/")) {
-    const finalPath = `destinations/${id}.webp`;
-    try {
-      await moveImage("package-images", imageUrl, finalPath);
-      await adminClient.from("destinations").update({ image_url: finalPath }).eq("id", id);
-    } catch (moveErr) {
-      logQueryError("updateDestino:moveImage", moveErr);
+    if (!id) {
+      return { success: false, error: "ID de destino no proporcionado." };
     }
-  }
+    if (!name || name.length === 0) {
+      return { success: false, error: "El nombre es requerido.", field: "name" };
+    }
+    if (!country || country.length === 0) {
+      return { success: false, error: "El país es requerido.", field: "country" };
+    }
+    if (!slug || slug.length === 0) {
+      slug = slugify(name);
+    }
 
-  revalidatePath(`/${locale}/admin/destinos`);
-  redirect(`/${locale}/admin/destinos`);
-}
+    // Slug uniqueness check (exclude current)
+    const { data: existing } = await adminClient
+      .from("destinations")
+      .select("id")
+      .eq("slug", slug)
+      .is("deleted_at", null)
+      .neq("id", id)
+      .maybeSingle();
+
+    if (existing) {
+      return {
+        success: false,
+        error: "Ya existe otro destino con ese slug.",
+        field: "slug",
+      };
+    }
+
+    const { error } = await adminClient
+      .from("destinations")
+      .update({
+        name,
+        slug,
+        description,
+        country,
+        region,
+        image_url: imageUrl,
+        is_active: isActive,
+        meta_title: metaTitle,
+        meta_description: metaDescription,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id);
+
+    if (error) {
+      return { success: false, error: mapSupabaseError(error, locale) };
+    }
+
+    // Move a re-uploaded staging image to its final path.
+    if (imageUrl?.startsWith("destinations/staging/")) {
+      const finalPath = `destinations/${id}.webp`;
+      try {
+        await moveImage("package-images", imageUrl, finalPath);
+        await adminClient.from("destinations").update({ image_url: finalPath }).eq("id", id);
+      } catch (moveErr) {
+        logQueryError("updateDestino:moveImage", moveErr);
+      }
+    }
+
+    revalidatePath(`/${locale}/admin/destinos`);
+    redirect(`/${locale}/admin/destinos`);
+  },
+);
 
 /* ──────────────────────────────────────────────
  * Delete (soft)
  * ────────────────────────────────────────────── */
 
-export async function deleteDestino(
-  _prev: ActionResult | null,
-  formData: FormData,
-): Promise<ActionResult> {
-  const userClient = await createClient();
-  const locale = await getLocale();
-  await requireAdmin(userClient, locale);
+export const deleteDestino = withAdminAction<ActionResult>(
+  async ({ locale, adminClient }, formData) => {
+    const id = formData.get("id") as string;
 
-  const adminClient = createAdminClient();
+    if (!id) {
+      return { success: false, error: "ID de destino no proporcionado." };
+    }
 
-  const id = formData.get("id") as string;
+    const { error } = await adminClient
+      .from("destinations")
+      .update({ deleted_at: new Date().toISOString() })
+      .eq("id", id);
 
-  if (!id) {
-    return { success: false, error: "ID de destino no proporcionado." };
-  }
+    if (error) {
+      return { success: false, error: mapSupabaseError(error, locale) };
+    }
 
-  const { error } = await adminClient
-    .from("destinations")
-    .update({ deleted_at: new Date().toISOString() })
-    .eq("id", id);
-
-  if (error) {
-    return { success: false, error: mapSupabaseError(error, locale) };
-  }
-
-  revalidatePath(`/${locale}/admin/destinos`);
-  redirect(`/${locale}/admin/destinos`);
-}
+    revalidatePath(`/${locale}/admin/destinos`);
+    redirect(`/${locale}/admin/destinos`);
+  },
+);
 
 /* ──────────────────────────────────────────────
  * Image Upload
