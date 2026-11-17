@@ -5,6 +5,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/auth/utils";
 import { slugify } from "@/lib/utils/slug";
 import { getPublicUrl, moveImage, uploadImage } from "@/lib/supabase/storage";
+import { mapSupabaseError } from "@/lib/supabase/errors";
+import { logQueryError } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
@@ -140,7 +142,7 @@ export async function createPaquete(
     .single();
 
   if (error) {
-    return { success: false, error: error.message };
+    return { success: false, error: mapSupabaseError(error, locale) };
   }
 
   // Insert package_destinations
@@ -154,7 +156,7 @@ export async function createPaquete(
     );
 
     if (pdError) {
-      return { success: false, error: pdError.message };
+      return { success: false, error: mapSupabaseError(pdError, locale) };
     }
   }
 
@@ -177,7 +179,7 @@ export async function createPaquete(
         try {
           await moveImage("package-images", path, finalPath);
         } catch (moveErr) {
-          console.error("createPaquete: failed to move image to final path:", moveErr);
+          logQueryError("createPaquete:moveImage", moveErr);
         }
       }
 
@@ -193,7 +195,7 @@ export async function createPaquete(
     const { error: piError } = await adminClient.from("package_images").insert(imageRows);
 
     if (piError) {
-      return { success: false, error: piError.message };
+      return { success: false, error: mapSupabaseError(piError, locale) };
     }
   }
 
@@ -329,7 +331,7 @@ export async function updatePaquete(
     .eq("id", id);
 
   if (updateError) {
-    return { success: false, error: updateError.message };
+    return { success: false, error: mapSupabaseError(updateError, locale) };
   }
 
   // Replace package_destinations
@@ -345,7 +347,7 @@ export async function updatePaquete(
     );
 
     if (pdError) {
-      return { success: false, error: pdError.message };
+      return { success: false, error: mapSupabaseError(pdError, locale) };
     }
   }
 
@@ -370,7 +372,7 @@ export async function updatePaquete(
         try {
           await moveImage("package-images", path, finalPath);
         } catch (moveErr) {
-          console.error("updatePaquete: failed to move image to final path:", moveErr);
+          logQueryError("updatePaquete:moveImage", moveErr);
         }
       }
 
@@ -386,7 +388,7 @@ export async function updatePaquete(
     const { error: piError } = await adminClient.from("package_images").insert(imageRows);
 
     if (piError) {
-      return { success: false, error: piError.message };
+      return { success: false, error: mapSupabaseError(piError, locale) };
     }
   }
 
@@ -423,7 +425,7 @@ export async function deletePaquete(
     .eq("id", id);
 
   if (error) {
-    return { success: false, error: error.message };
+    return { success: false, error: mapSupabaseError(error, locale) };
   }
 
   revalidatePath(`/${locale}/admin/paquetes`);
@@ -460,7 +462,7 @@ export async function togglePublish(
     .single();
 
   if (fetchError) {
-    return { success: false, error: fetchError.message };
+    return { success: false, error: mapSupabaseError(fetchError, locale) };
   }
 
   const isPublishing = !pkg?.published_at;
@@ -474,7 +476,7 @@ export async function togglePublish(
     .eq("id", id);
 
   if (updateError) {
-    return { success: false, error: updateError.message };
+    return { success: false, error: mapSupabaseError(updateError, locale) };
   }
 
   revalidatePath(`/${locale}/admin/paquetes`);
@@ -527,9 +529,10 @@ export async function uploadPaqueteImage(
     const url = getPublicUrl("package-images", path);
     return { success: true, path, url };
   } catch (err) {
+    logQueryError("uploadPaqueteImage", err);
     return {
       success: false,
-      error: err instanceof Error ? err.message : "Error al subir la imagen.",
+      error: mapSupabaseError(err, locale),
     };
   }
 }

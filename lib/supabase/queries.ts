@@ -1,7 +1,10 @@
 import "server-only";
 
+import { cache } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
+import { SupabaseQueryError, classifySupabaseError, mapSupabaseError } from "@/lib/supabase/errors";
+import { logQueryError } from "@/lib/logger";
 
 /**
  * Thrown when a Supabase query fails for reasons other than "not found"
@@ -10,13 +13,7 @@ import type { Database } from "@/lib/supabase/database.types";
  * treating it the same as a genuine 404 — a silent 404 on a real backend
  * failure is worse for SEO/monitoring than a visible error.
  */
-export class SupabaseQueryError extends Error {
-  constructor(message: string, cause: unknown) {
-    super(message);
-    this.name = "SupabaseQueryError";
-    this.cause = cause;
-  }
-}
+export { SupabaseQueryError };
 
 export type PackageDestinationSummary = {
   slug: string;
@@ -61,12 +58,18 @@ type ListPackagesRow = {
   }[];
 };
 
+function assertListPackagesRow(value: unknown): asserts value is ListPackagesRow {
+  if (!value || typeof value !== "object") {
+    throw new SupabaseQueryError("Invalid package row shape returned from Supabase", "unknown");
+  }
+}
+
 /**
  * Lists active, published packages for the public catalog grid.
  * Optionally filters by `tipo` (nacional | internacional).
  * Resolves storage paths to public URLs via the `package-images` bucket.
  */
-export async function listPackages(
+export const listPackages = cache(async function listPackages(
   supabase: SupabaseClient<Database>,
   options?: ListPackagesOptions,
 ): Promise<PackageCardData[]> {
@@ -98,14 +101,19 @@ export async function listPackages(
     query = query.limit(options.limit);
   }
 
-  const { data, error } = await query;
+  const { data, error } = await query.returns<ListPackagesRow[]>();
 
   if (error) {
-    console.error("listPackages: failed to fetch packages from Supabase:", error);
-    return [];
+    logQueryError("listPackages", error);
+    throw new SupabaseQueryError(
+      mapSupabaseError(error, "es"),
+      classifySupabaseError(error),
+      error,
+    );
   }
 
-  const rows = (data ?? []) as unknown as ListPackagesRow[];
+  const rows = data ?? [];
+  rows.forEach(assertListPackagesRow);
 
   return rows.map((row) => {
     const images = row.package_images ?? [];
@@ -132,7 +140,7 @@ export async function listPackages(
       destinations,
     };
   });
-}
+});
 
 export type PackageImage = {
   url: string;
@@ -186,7 +194,7 @@ type PackageDetailRow = {
  * including its full image gallery and included destinations.
  * Returns null when not found, inactive, or not yet published.
  */
-export async function getPackageBySlug(
+export const getPackageBySlug = cache(async function getPackageBySlug(
   supabase: SupabaseClient<Database>,
   slug: string,
 ): Promise<PackageDetailData | null> {
@@ -207,18 +215,21 @@ export async function getPackageBySlug(
     .not("published_at", "is", null)
     .lte("published_at", new Date().toISOString())
     .is("deleted_at", null)
-    .maybeSingle();
+    .maybeSingle()
+    .returns<PackageDetailRow>();
 
   if (error) {
-    console.error(`getPackageBySlug: failed to fetch package "${slug}" from Supabase:`, error);
-    throw new SupabaseQueryError(`Failed to fetch package "${slug}" from Supabase`, error);
+    logQueryError("getPackageBySlug", error);
+    throw new SupabaseQueryError(
+      mapSupabaseError(error, "es"),
+      classifySupabaseError(error),
+      error,
+    );
   }
 
   if (!data) return null;
 
-  const row = data as unknown as PackageDetailRow;
-
-  const images = (row.package_images ?? [])
+  const images = (data.package_images ?? [])
     .slice()
     .sort((a, b) => a.display_order - b.display_order)
     .map((img) => ({
@@ -227,26 +238,26 @@ export async function getPackageBySlug(
       isPrimary: img.is_primary,
     }));
 
-  const destinations = (row.package_destinations ?? [])
+  const destinations = (data.package_destinations ?? [])
     .map((pd) => pd.destinations)
     .filter((d): d is NonNullable<typeof d> => d !== null)
     .filter((d) => d.is_active && d.deleted_at === null)
     .map(({ slug, name, country }) => ({ slug, name, country }));
 
   return {
-    id: row.id,
-    title: row.title,
-    slug: row.slug,
-    description: row.description,
-    price: row.price,
-    durationDays: row.duration_days,
-    isNational: row.is_national,
-    whatIncludes: row.what_includes,
-    whatExcludes: row.what_excludes,
+    id: data.id,
+    title: data.title,
+    slug: data.slug,
+    description: data.description,
+    price: data.price,
+    durationDays: data.duration_days,
+    isNational: data.is_national,
+    whatIncludes: data.what_includes,
+    whatExcludes: data.what_excludes,
     images,
     destinations,
   };
-}
+});
 
 export type DestinationPackageSummary = {
   slug: string;
@@ -300,7 +311,7 @@ type DestinationDetailRow = {
  * including active published packages that include this destination.
  * Returns null when not found or inactive.
  */
-export async function getDestinationBySlug(
+export const getDestinationBySlug = cache(async function getDestinationBySlug(
   supabase: SupabaseClient<Database>,
   slug: string,
 ): Promise<DestinationDetailData | null> {
@@ -321,22 +332,22 @@ export async function getDestinationBySlug(
     .eq("slug", slug)
     .eq("is_active", true)
     .is("deleted_at", null)
-    .maybeSingle();
+    .maybeSingle()
+    .returns<DestinationDetailRow>();
 
   if (error) {
-    console.error(
-      `getDestinationBySlug: failed to fetch destination "${slug}" from Supabase:`,
+    logQueryError("getDestinationBySlug", error);
+    throw new SupabaseQueryError(
+      mapSupabaseError(error, "es"),
+      classifySupabaseError(error),
       error,
     );
-    throw new SupabaseQueryError(`Failed to fetch destination "${slug}" from Supabase`, error);
   }
 
   if (!data) return null;
 
-  const row = data as unknown as DestinationDetailRow;
-
   const now = new Date().toISOString();
-  const packages = (row.package_destinations ?? [])
+  const packages = (data.package_destinations ?? [])
     .map((pd) => pd.travel_packages)
     .filter(
       (tp): tp is NonNullable<typeof tp> =>
@@ -367,18 +378,18 @@ export async function getDestinationBySlug(
     });
 
   return {
-    id: row.id,
-    slug: row.slug,
-    name: row.name,
-    country: row.country,
-    region: row.region,
-    description: row.description,
-    imageUrl: row.image_url
-      ? supabase.storage.from("package-images").getPublicUrl(row.image_url).data.publicUrl
+    id: data.id,
+    slug: data.slug,
+    name: data.name,
+    country: data.country,
+    region: data.region,
+    description: data.description,
+    imageUrl: data.image_url
+      ? supabase.storage.from("package-images").getPublicUrl(data.image_url).data.publicUrl
       : null,
     packages,
   };
-}
+});
 
 export type ActiveSlugs = {
   packages: { slug: string }[];
@@ -389,6 +400,50 @@ export type ActiveSlugs = {
  * Fetches all active, published package slugs and active destination slugs.
  * Used to build the dynamic sitemap with hreflang alternates.
  */
+export const getAllActiveSlugs = cache(async function getAllActiveSlugs(
+  supabase: SupabaseClient<Database>,
+): Promise<ActiveSlugs> {
+  const [packagesResult, destinationsResult] = await Promise.all([
+    supabase
+      .from("travel_packages")
+      .select("slug")
+      .eq("is_active", true)
+      .not("published_at", "is", null)
+      .lte("published_at", new Date().toISOString())
+      .is("deleted_at", null)
+      .returns<{ slug: string }[]>(),
+    supabase
+      .from("destinations")
+      .select("slug")
+      .eq("is_active", true)
+      .is("deleted_at", null)
+      .returns<{ slug: string }[]>(),
+  ]);
+
+  if (packagesResult.error) {
+    logQueryError("getAllActiveSlugs:packages", packagesResult.error);
+    throw new SupabaseQueryError(
+      mapSupabaseError(packagesResult.error, "es"),
+      classifySupabaseError(packagesResult.error),
+      packagesResult.error,
+    );
+  }
+
+  if (destinationsResult.error) {
+    logQueryError("getAllActiveSlugs:destinations", destinationsResult.error);
+    throw new SupabaseQueryError(
+      mapSupabaseError(destinationsResult.error, "es"),
+      classifySupabaseError(destinationsResult.error),
+      destinationsResult.error,
+    );
+  }
+
+  return {
+    packages: packagesResult.data ?? [],
+    destinations: destinationsResult.data ?? [],
+  };
+});
+
 export type DestinationCardData = {
   slug: string;
   name: string;
@@ -411,7 +466,7 @@ type ListDestinationsRow = {
  * Lists all active destinations for the destination listing page.
  * Includes a computed public storage URL for each destination's hero image.
  */
-export async function listDestinations(
+export const listDestinations = cache(async function listDestinations(
   supabase: SupabaseClient<Database>,
 ): Promise<DestinationCardData[]> {
   const { data, error } = await supabase
@@ -419,14 +474,19 @@ export async function listDestinations(
     .select("slug, name, country, region, description, image_url")
     .eq("is_active", true)
     .is("deleted_at", null)
-    .order("name", { ascending: true });
+    .order("name", { ascending: true })
+    .returns<ListDestinationsRow[]>();
 
   if (error) {
-    console.error("listDestinations: failed to fetch destinations from Supabase:", error);
-    return [];
+    logQueryError("listDestinations", error);
+    throw new SupabaseQueryError(
+      mapSupabaseError(error, "es"),
+      classifySupabaseError(error),
+      error,
+    );
   }
 
-  const rows = (data ?? []) as unknown as ListDestinationsRow[];
+  const rows = data ?? [];
 
   return rows.map((row) => ({
     slug: row.slug,
@@ -438,32 +498,4 @@ export async function listDestinations(
       ? supabase.storage.from("package-images").getPublicUrl(row.image_url).data.publicUrl
       : null,
   }));
-}
-
-export async function getAllActiveSlugs(supabase: SupabaseClient<Database>): Promise<ActiveSlugs> {
-  const [packagesResult, destinationsResult] = await Promise.all([
-    supabase
-      .from("travel_packages")
-      .select("slug")
-      .eq("is_active", true)
-      .not("published_at", "is", null)
-      .lte("published_at", new Date().toISOString())
-      .is("deleted_at", null),
-    supabase.from("destinations").select("slug").eq("is_active", true).is("deleted_at", null),
-  ]);
-
-  if (packagesResult.error) {
-    console.error("getAllActiveSlugs: failed to fetch package slugs:", packagesResult.error);
-  }
-  if (destinationsResult.error) {
-    console.error(
-      "getAllActiveSlugs: failed to fetch destination slugs:",
-      destinationsResult.error,
-    );
-  }
-
-  return {
-    packages: packagesResult.data ?? [],
-    destinations: destinationsResult.data ?? [],
-  };
-}
+});

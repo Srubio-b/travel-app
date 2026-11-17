@@ -5,6 +5,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/auth/utils";
 import { slugify } from "@/lib/utils/slug";
 import { getPublicUrl, moveImage, uploadImage } from "@/lib/supabase/storage";
+import { mapSupabaseError } from "@/lib/supabase/errors";
+import { logQueryError } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
@@ -87,7 +89,7 @@ export async function createDestino(
     .single();
 
   if (error) {
-    return { success: false, error: error.message };
+    return { success: false, error: mapSupabaseError(error, locale) };
   }
 
   // Move staging image to its final path after the destination ID is known.
@@ -97,7 +99,7 @@ export async function createDestino(
       await moveImage("package-images", imageUrl, finalPath);
       await adminClient.from("destinations").update({ image_url: finalPath }).eq("id", data.id);
     } catch (moveErr) {
-      console.error("createDestino: failed to move image to final path:", moveErr);
+      logQueryError("createDestino:moveImage", moveErr);
     }
   }
 
@@ -177,7 +179,7 @@ export async function updateDestino(
     .eq("id", id);
 
   if (error) {
-    return { success: false, error: error.message };
+    return { success: false, error: mapSupabaseError(error, locale) };
   }
 
   // Move a re-uploaded staging image to its final path.
@@ -187,7 +189,7 @@ export async function updateDestino(
       await moveImage("package-images", imageUrl, finalPath);
       await adminClient.from("destinations").update({ image_url: finalPath }).eq("id", id);
     } catch (moveErr) {
-      console.error("updateDestino: failed to move image to final path:", moveErr);
+      logQueryError("updateDestino:moveImage", moveErr);
     }
   }
 
@@ -221,7 +223,7 @@ export async function deleteDestino(
     .eq("id", id);
 
   if (error) {
-    return { success: false, error: error.message };
+    return { success: false, error: mapSupabaseError(error, locale) };
   }
 
   revalidatePath(`/${locale}/admin/destinos`);
@@ -274,9 +276,10 @@ export async function uploadDestinoImage(
     const url = getPublicUrl("package-images", path);
     return { success: true, path, url };
   } catch (err) {
+    logQueryError("uploadDestinoImage", err);
     return {
       success: false,
-      error: err instanceof Error ? err.message : "Error al subir la imagen.",
+      error: mapSupabaseError(err, locale),
     };
   }
 }
