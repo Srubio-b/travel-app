@@ -64,7 +64,7 @@ export function ProfileForm({ defaultName, defaultPhone, avatarUrl }: Props) {
           {avatarPreview && (
             <Image
               src={avatarPreview}
-              alt=""
+              alt={t("avatarAlt")}
               width={80}
               height={80}
               unoptimized={avatarPreview.startsWith("data:") || avatarPreview.startsWith("blob:")}
@@ -93,13 +93,13 @@ export function ProfileForm({ defaultName, defaultPhone, avatarUrl }: Props) {
         )}
 
         {fileError && (
-          <p className="text-sm text-red-600" role="alert">
+          <p className="text-sm text-destructive" role="alert">
             {fileError}
           </p>
         )}
 
         {avatarState?.success === false && (
-          <p className="text-sm text-red-600" role="alert">
+          <p className="text-sm text-destructive" role="alert">
             {avatarState.error}
           </p>
         )}
@@ -137,13 +137,13 @@ export function ProfileForm({ defaultName, defaultPhone, avatarUrl }: Props) {
         </div>
 
         {state?.success === false && (
-          <p className="text-sm text-red-600" role="alert">
+          <p className="text-sm text-destructive" role="alert">
             {state.field === "phone" ? t("phoneError") : state.error}
           </p>
         )}
 
         {state?.success && (
-          <p className="text-sm text-green-600" role="status">
+          <p className="text-sm text-success" role="status">
             {t("saved")}
           </p>
         )}

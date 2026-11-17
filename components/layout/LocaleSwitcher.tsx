@@ -31,6 +31,7 @@ export function LocaleSwitcher() {
             type="button"
             onClick={() => handleChange(l as Locale)}
             aria-label={t("label")}
+            aria-current={locale === l ? "true" : undefined}
             className={`transition-colors hover:text-fg ${locale === l ? "text-fg" : "text-muted"}`}
           >
             {l.toUpperCase()}

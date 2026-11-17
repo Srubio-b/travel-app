@@ -74,6 +74,7 @@ export default async function PaquetesPage({ params, searchParams }: Props) {
         columnPrice: t("columnPrice"),
         columnDuration: t("columnDuration"),
         columnStatus: t("columnStatus"),
+        columnActions: t("columnActions"),
         badgeDraft: t("badge.draft"),
         badgePublished: t("badge.published"),
         badgeNational: t("badge.national"),

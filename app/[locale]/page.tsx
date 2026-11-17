@@ -19,8 +19,9 @@ async function getFeaturedPackages(supabase: SupabaseClient<Database>): Promise<
 
 export default async function HomePage() {
   const supabase = await createClient();
-  const [t, featuredPackages] = await Promise.all([
+  const [t, tCatalog, featuredPackages] = await Promise.all([
     getTranslations("home"),
+    getTranslations("catalog"),
     getFeaturedPackages(supabase),
   ]);
 
@@ -86,9 +87,9 @@ export default async function HomePage() {
                       {pkg.title}
                     </h3>
                     <p className="text-sm text-muted">
-                      {pkg.durationDays} días
+                      {tCatalog("days", { count: pkg.durationDays })}
                       {pkg.isNational !== null &&
-                        ` · ${pkg.isNational ? "Nacional" : "Internacional"}`}
+                        ` · ${tCatalog(pkg.isNational ? "badgeNational" : "badgeInternational")}`}
                     </p>
                   </div>
                 </article>

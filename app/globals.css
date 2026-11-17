@@ -16,6 +16,7 @@
   --destructive: oklch(0.58 0.18 25);
   --destructive-subtle: oklch(0.93 0.03 25);
   --success: oklch(0.45 0.15 145);
+  --success-subtle: oklch(0.93 0.03 145);
   --ink: #000;
 }
 
@@ -31,6 +32,7 @@
   --destructive: oklch(0.65 0.15 25);
   --destructive-subtle: oklch(0.25 0.03 25);
   --success: oklch(0.6 0.12 145);
+  --success-subtle: oklch(0.25 0.03 145);
   --ink: #fff;
 }
 
@@ -46,6 +48,7 @@
   --color-destructive: var(--destructive);
   --color-destructive-subtle: var(--destructive-subtle);
   --color-success: var(--success);
+  --color-success-subtle: var(--success-subtle);
   --color-ink: var(--ink);
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Playfair Display", ui-serif, Georgia, serif;
@@ -90,4 +93,10 @@ body {
 ::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 3px;
+}
+
+/* ───── Native dialog backdrop ───── */
+
+dialog::backdrop {
+  background-color: rgb(0 0 0 / 0.4);
 }

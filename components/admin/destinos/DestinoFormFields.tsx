@@ -49,6 +49,7 @@ export type DestinoFormFieldsProps = {
     change: string;
     remove: string;
     uploading: string;
+    preview: string;
   };
   /** Link to navigate back */
   backHref: string;
@@ -198,6 +199,7 @@ export function DestinoFormFields({
               change: labels.change,
               remove: labels.remove,
               uploading: labels.uploading,
+              preview: labels.preview,
             }}
           />
         </div>

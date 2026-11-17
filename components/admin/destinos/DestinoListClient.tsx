@@ -30,6 +30,7 @@ export type DestinoListClientProps = {
     columnCountry: string;
     columnRegion: string;
     columnActive: string;
+    columnActions: string;
     yes: string;
     no: string;
   };
@@ -120,6 +121,7 @@ export function DestinoListClient({
           edit: labels.edit,
           delete: labels.delete,
           noResults: labels.noResults,
+          actions: labels.columnActions,
         }}
       />
 

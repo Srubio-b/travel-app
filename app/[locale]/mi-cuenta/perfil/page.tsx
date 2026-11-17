@@ -31,7 +31,7 @@ export default async function PerfilPage({ params }: { params: Promise<{ locale:
           <div className="mb-4">
             <Image
               src={profile.avatar_url}
-              alt=""
+              alt={t("avatarAlt")}
               width={96}
               height={96}
               className="rounded-full object-cover"

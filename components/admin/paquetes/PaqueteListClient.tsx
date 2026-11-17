@@ -34,6 +34,7 @@ export type PaqueteListClientProps = {
     columnPrice: string;
     columnDuration: string;
     columnStatus: string;
+    columnActions: string;
     badgeDraft: string;
     badgePublished: string;
     badgeNational: string;
@@ -179,6 +180,7 @@ export function PaqueteListClient({
           edit: labels.edit,
           delete: labels.delete,
           noResults: labels.noResults,
+          actions: labels.columnActions,
         }}
       />
 

@@ -36,8 +36,8 @@ export default function RegisterPage() {
     return (
       <main className="mx-auto max-w-md px-4 py-16">
         <h1 className="mb-8 text-3xl font-bold">{t("title")}</h1>
-        <div className="rounded-lg border border-green-200 bg-green-50 p-4">
-          <p className="text-green-800">{t("confirmationMessage")}</p>
+        <div className="rounded-lg border border-success-subtle bg-success-subtle p-4">
+          <p className="text-success">{t("confirmationMessage")}</p>
         </div>
         <p className="mt-4 text-center text-sm text-muted-foreground">
           <a href={loginHref} className="text-primary hover:underline">
@@ -97,14 +97,14 @@ export default function RegisterPage() {
             className="w-full rounded-lg border border-border px-4 py-2 focus:border-primary focus:outline-none"
           />
           {passwordErr && (
-            <p className="mt-1 text-sm text-red-600" role="alert">
+            <p className="mt-1 text-sm text-destructive" role="alert">
               {passwordErr}
             </p>
           )}
         </div>
 
         {state?.success === false && !passwordErr && (
-          <p className="text-sm text-red-600" role="alert">
+          <p className="text-sm text-destructive" role="alert">
             {state.error}
           </p>
         )}

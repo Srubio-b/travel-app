@@ -38,7 +38,7 @@ export async function Header() {
         </div>
 
         {/* Mobile hamburger */}
-        <MobileMenu />
+        <MobileMenu userMenu={<UserMenu />} />
       </div>
     </header>
   );

@@ -36,64 +36,64 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const confirmRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const cancelRef = useRef<HTMLButtonElement>(null);
 
-  // Focus trap basics: focus the confirm button when opened
+  // Open/close the native dialog in sync with the open prop.
   useEffect(() => {
-    if (open) {
-      confirmRef.current?.focus();
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (open && !dialog.open) {
+      dialog.showModal();
+      // Focus the safer cancel button after the dialog is shown.
+      window.setTimeout(() => cancelRef.current?.focus(), 0);
+    } else if (!open && dialog.open) {
+      dialog.close();
     }
   }, [open]);
 
-  // Close on Escape
+  // Notify parent when the dialog is dismissed (Escape, form method, etc.).
   useEffect(() => {
-    if (!open) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onCancel();
-    };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
-  }, [open, onCancel]);
+    const dialog = dialogRef.current;
+    if (!dialog) return;
 
-  if (!open) return null;
+    const handleClose = () => onCancel();
+    dialog.addEventListener("close", handleClose);
+    return () => dialog.removeEventListener("close", handleClose);
+  }, [onCancel]);
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-      onClick={onCancel}
-      role="dialog"
-      aria-modal="true"
+    <dialog
+      ref={dialogRef}
+      onClick={(e) => {
+        if (e.target === dialogRef.current) onCancel();
+      }}
+      className="fixed inset-0 z-50 m-auto w-full max-w-sm rounded-xl border border-border bg-bg p-6 shadow-lg"
       aria-labelledby="confirm-title"
     >
-      <div
-        ref={dialogRef}
-        onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-sm rounded-xl border border-border bg-bg p-6 shadow-lg"
-      >
-        <h3 id="confirm-title" className="text-lg font-semibold text-fg">
-          {title}
-        </h3>
-        <p className="mt-2 text-sm text-muted-foreground">{message}</p>
+      <h3 id="confirm-title" className="text-lg font-semibold text-fg">
+        {title}
+      </h3>
+      <p className="mt-2 text-sm text-muted-foreground">{message}</p>
 
-        <div className="mt-6 flex items-center justify-end gap-3">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-fg transition-colors hover:bg-muted"
-          >
-            {cancelLabel}
-          </button>
-          <button
-            ref={confirmRef}
-            type="button"
-            onClick={onConfirm}
-            className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
-          >
-            {confirmLabel}
-          </button>
-        </div>
+      <div className="mt-6 flex items-center justify-end gap-3">
+        <button
+          ref={cancelRef}
+          type="button"
+          onClick={onCancel}
+          className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-fg transition-colors hover:bg-muted"
+        >
+          {cancelLabel}
+        </button>
+        <button
+          type="button"
+          onClick={onConfirm}
+          className="rounded-lg bg-destructive px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-destructive/90"
+        >
+          {confirmLabel}
+        </button>
       </div>
-    </div>
+    </dialog>
   );
 }

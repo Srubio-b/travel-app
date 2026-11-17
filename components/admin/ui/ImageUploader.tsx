@@ -33,6 +33,7 @@ export type ImageUploaderProps = {
     change: string;
     remove: string;
     uploading: string;
+    preview: string;
   };
 };
 
@@ -76,7 +77,7 @@ export function ImageUploader({ initialUrl, action, onSuccess, labels }: ImageUp
         <div className="relative inline-block h-40 w-60">
           <Image
             src={preview}
-            alt="Preview"
+            alt={labels.preview}
             width={240}
             height={160}
             unoptimized={preview.startsWith("data:") || preview.startsWith("blob:")}
@@ -121,7 +122,7 @@ export function ImageUploader({ initialUrl, action, onSuccess, labels }: ImageUp
         )}
 
         {state?.error && (
-          <span className="text-sm text-red-500" role="alert">
+          <span className="text-sm text-destructive" role="alert">
             {state.error}
           </span>
         )}
