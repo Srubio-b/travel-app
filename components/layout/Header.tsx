@@ -10,7 +10,10 @@ export async function Header() {
   const t = await getTranslations("nav");
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-bg/90 backdrop-blur-sm">
+    <header
+      className="sticky top-0 z-40 border-b border-border bg-bg/90 backdrop-blur-sm"
+      style={{ viewTransitionName: "site-header" }}
+    >
       <div className="container-page flex h-16 items-center justify-between">
         <Logo />
 
