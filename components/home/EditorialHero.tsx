@@ -40,6 +40,10 @@ export function EditorialHero({ title, subtitle, cta, ctaHref }: EditorialHeroPr
     const video = videoRef.current;
     if (!video) return;
 
+    // Calmer waves: half speed drifts gently and makes the loop seam far
+    // less noticeable (owner request).
+    video.playbackRate = 0.5;
+
     video.play().catch(() => {
       // Autoplay policies or a transient failure: the photograph stays.
     });

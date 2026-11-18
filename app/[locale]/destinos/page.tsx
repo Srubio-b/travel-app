@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { DestinationCardLink } from "@/components/destinations/DestinationCardLink";
+import { RevealOnScroll } from "@/components/shared/RevealOnScroll";
 import { createPublicClient } from "@/lib/supabase/public";
 import { listDestinations } from "@/lib/supabase/queries";
 import { SITE_URL } from "@/lib/config/site";
@@ -52,7 +53,7 @@ export default async function DestinosPage() {
             <p className="mt-2 text-muted">{t("emptyBody")}</p>
           </div>
         ) : (
-          <div className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+          <RevealOnScroll className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
             {destinations.map((dest) => (
               <DestinationCardLink
                 key={dest.slug}
@@ -63,7 +64,7 @@ export default async function DestinosPage() {
                 imageSrc={dest.imageUrl}
               />
             ))}
-          </div>
+          </RevealOnScroll>
         )}
       </section>
     </PublicLayout>

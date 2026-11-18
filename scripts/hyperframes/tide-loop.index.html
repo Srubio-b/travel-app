@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --ground: #f8f7f4; /* paper, oklch(0.985 0.002 60) */
+        --terracotta: 184, 74, 58; /* #b84a3a — L&A's one voice */
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--ground);
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+      .wave {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        will-change: transform;
+      }
+      .wave svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="12"
+      data-width="1920"
+      data-height="1080"
+    >
+      <!-- The editorial tide: three terracotta ribbons drifting over paper.
+           Each layer travels an exact number of its 1920px periods in 12s, so
+           the loop point is mathematically identical to the start. -->
+      <div
+        id="sea"
+        class="clip"
+        data-start="0"
+        data-duration="12"
+        data-track-index="0"
+        data-layout-allow-overflow="true"
+      >
+        <div class="wave" id="wave-a" style="width: 5760px"></div>
+        <div class="wave" id="wave-b" style="width: 5760px"></div>
+        <div class="wave" id="wave-c" style="width: 7680px"></div>
+      </div>
+    </div>
+    <script>
+      // Deterministic ribbon geometry — a function of amplitude and period only.
+      // Each full period returns to baseY with zero slope, so tiles are seamless.
+      function sineRibbon(width, period, amp, baseY, rgb, alpha) {
+        const q = period / 4;
+        let d = "M 0 " + baseY.toFixed(1);
+
+        for (let x = 0; x < width; x += period) {
+          d +=
+            " C " +
+            (x + q) +
+            " " +
+            (baseY - amp).toFixed(1) +
+            ", " +
+            (x + 2 * q) +
+            " " +
+            (baseY - amp).toFixed(1) +
+            ", " +
+            (x + 2 * q) +
+            " " +
+            baseY.toFixed(1);
+          d +=
+            " C " +
+            (x + 3 * q) +
+            " " +
+            (baseY + amp).toFixed(1) +
+            ", " +
+            (x + 4 * q) +
+            " " +
+            (baseY + amp).toFixed(1) +
+            ", " +
+            (x + 4 * q) +
+            " " +
+            baseY.toFixed(1);
+        }
+
+        d += " L " + width + " 1080 L 0 1080 Z";
+
+        return (
+          '<svg viewBox="0 0 ' + width + ' 1080" preserveAspectRatio="none">' +
+          '<path d="' + d + '" fill="rgb(' + rgb + " / " + alpha + ')"></path></svg>'
+        );
+      }
+
+      document.getElementById("wave-a").innerHTML = sineRibbon(5760, 1920, 70, 620, "184, 74, 58", 0.1);
+      document.getElementById("wave-b").innerHTML = sineRibbon(5760, 1920, 90, 760, "184, 74, 58", 0.2);
+      document.getElementById("wave-c").innerHTML = sineRibbon(7680, 1920, 120, 880, "184, 74, 58", 0.32);
+
+      window.__timelines = window.__timelines || {};
+
+      const tl = gsap.timeline({ paused: true });
+
+      // Exact-period drifts — the loop closes on itself.
+      tl.fromTo("#wave-a", { x: 0 }, { x: -1920, duration: 12, ease: "none" }, 0);
+      tl.fromTo("#wave-b", { x: -960 }, { x: -2880, duration: 12, ease: "none" }, 0);
+      tl.fromTo("#wave-c", { x: 0 }, { x: -3840, duration: 12, ease: "none" }, 0);
+
+      // One gentle organic lift on the mid ribbon — net zero at the loop.
+      tl.to(
+        "#wave-b",
+        {
+          keyframes: [
+            { y: 14, duration: 6, ease: "sine.inOut" },
+            { y: 0, duration: 6, ease: "sine.inOut" },
+          ],
+        },
+        0,
+      );
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

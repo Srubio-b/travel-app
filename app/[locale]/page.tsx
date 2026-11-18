@@ -2,10 +2,12 @@ import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { EditorialHero } from "@/components/home/EditorialHero";
+import { AmbientVideo } from "@/components/shared/AmbientVideo";
+import { RevealOnScroll } from "@/components/shared/RevealOnScroll";
 import { createClient } from "@/lib/supabase/server";
 import { listPackages } from "@/lib/supabase/queries";
 import { Link } from "@/lib/i18n/navigation";
-import { FALLBACK_IMAGES } from "@/lib/config/images";
+import { FALLBACK_IMAGES, TIDE_LOOP_VIDEO } from "@/lib/config/images";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
 import type { PackageCardData } from "@/lib/supabase/queries";
@@ -46,7 +48,7 @@ export default async function HomePage() {
             <p className="mt-4 text-muted">{t("featuredSubtitle")}</p>
           </div>
 
-          <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <RevealOnScroll className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {featuredPackages.map((pkg) => (
               <Link key={pkg.id} href={`/paquetes/${pkg.slug}`} className="group block">
                 <article>
@@ -72,13 +74,17 @@ export default async function HomePage() {
                 </article>
               </Link>
             ))}
-          </div>
+          </RevealOnScroll>
         </section>
       )}
 
-      {/* ───── About ───── */}
-      <section className="border-t border-border">
-        <div className="container-page py-24">
+      {/* ───── About — la marea editorial (banda ambiental sintética) ───── */}
+      <section className="relative overflow-hidden border-t border-border">
+        <AmbientVideo
+          src={TIDE_LOOP_VIDEO}
+          className="absolute inset-0 h-full w-full object-cover object-[50%_75%]"
+        />
+        <div className="container-page relative py-24">
           <div className="mx-auto grid max-w-4xl gap-12 sm:grid-cols-2 sm:gap-16">
             <div>
               <h2 className="font-display text-3xl leading-display tracking-tight sm:text-4xl">

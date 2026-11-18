@@ -48,3 +48,11 @@ export const ARRIVAL_HERO_IMAGES: Record<string, string> = {
  * the static photograph.
  */
 export const HERO_LOOP_VIDEO = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/package-images/editorial/hero-loop.mp4`;
+
+/**
+ * The editorial tide — a synthetic HyperFrames-rendered loop (106 KB) of
+ * terracotta ribbons drifting over paper. Each layer travels an exact number
+ * of its own period in 12s, so the loop point is mathematically seamless.
+ * Used as an ambient band behind the home About section.
+ */
+export const TIDE_LOOP_VIDEO = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/package-images/editorial/tide-loop.mp4`;
