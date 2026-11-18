@@ -77,6 +77,9 @@
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-inout-smooth: cubic-bezier(0.45, 0, 0.15, 1);
+
+  /* Editorial ambient — portada ken-burns (keyframes below) */
+  --animate-ken-burns: ken-burns 24s cubic-bezier(0.45, 0, 0.15, 1) 0s infinite alternate both;
 }
 
 /* ───── Base ───── */
@@ -87,6 +90,30 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ───── Editorial ambient motion ───── */
+
+@keyframes ken-burns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+/* Accessibility: every animation degrades to a static state when reduced
+   motion is requested — global guard per DESIGN.md (non-negotiable). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ───── Utilities ───── */

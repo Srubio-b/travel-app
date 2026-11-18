@@ -27,8 +27,8 @@ export default async function HomePage() {
 
   return (
     <PublicLayout>
-      {/* ───── Hero ───── */}
-      <section className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
+      {/* ───── Hero — portada editorial ───── */}
+      <section className="relative flex min-h-dvh items-end overflow-hidden">
         {/* Fallback background image — reemplazar con foto real del destino destacado */}
         <Image
           src={FALLBACK_IMAGES.hero}
@@ -36,22 +36,22 @@ export default async function HomePage() {
           fill
           priority
           sizes="100vw"
-          className="object-cover"
+          className="animate-ken-burns object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/60 to-bg/40" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
+        {/* Editorial scrim — keeps photography vivid while anchoring the type */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-black/10" />
 
-        <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
-          <h1 className="font-display text-balance text-5xl leading-display tracking-tight sm:text-6xl lg:text-7xl">
+        <div className="relative z-10 mx-auto w-full max-w-[72rem] px-6 pb-24 pt-40 sm:px-8 lg:px-12">
+          <h1 className="max-w-4xl font-display text-balance text-[clamp(2.75rem,6vw,6rem)] leading-display tracking-[-0.02em] text-white">
             {t("heroTitle")}
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-balance text-lg text-muted sm:text-xl">
+          <p className="mt-6 max-w-xl text-balance text-lg text-white/80 sm:text-xl">
             {t("heroSubtitle")}
           </p>
           <div className="mt-10">
             <Link
               href="/paquetes"
-              className="inline-block rounded-sm border border-primary px-8 py-3 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-white"
+              className="inline-block rounded-sm bg-primary px-8 py-3 text-sm font-medium text-primary-foreground transition-colors duration-[150ms] ease-out-expo hover:bg-primary-deep"
             >
               {t("heroCta")}
             </Link>
