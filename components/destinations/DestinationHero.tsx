@@ -1,17 +1,15 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
-import { ViewTransition } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { useDestinationTravel } from "@/components/transitions/DestinationTravel";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 type DestinationHeroProps = {
-  /** Must match the catalog card's ViewTransition name for the morph pair. */
-  vtName: string;
   name: string;
   regionLine: string;
   imageSrc: string;
@@ -19,19 +17,23 @@ type DestinationHeroProps = {
 };
 
 /**
- * Diorama 2.5D — the destination hero layers move at differential speeds on
- * scroll (the photograph lags below, the copy drifts up), so the reader "sinks
- * into" the place instead of scrolling past it. The ViewTransition morph pair
- * makes the catalog card image expand into this hero on navigation.
+ * Diorama 2.5D — the arrival view. Layers move at differential speeds on
+ * scroll (the photograph lags below, the copy drifts up), so the reader
+ * "sinks into" the place instead of scrolling past it.
+ *
+ * On mount it notifies the travel overlay (DestinationTravelProvider) that
+ * the arrival photograph is in place — the overlay cross-fades from the
+ * card's overview into this golden-hour view, completing the journey.
  */
-export function DestinationHero({
-  vtName,
-  name,
-  regionLine,
-  imageSrc,
-  imageAlt,
-}: DestinationHeroProps) {
+export function DestinationHero({ name, regionLine, imageSrc, imageAlt }: DestinationHeroProps) {
   const scopeRef = useRef<HTMLElement>(null);
+  const { notifyArrival } = useDestinationTravel();
+
+  // The journey lands here — let the cover cross-fade into this view.
+  // No-op when no travel is active (direct loads, other navigations).
+  useEffect(() => {
+    notifyArrival();
+  }, [notifyArrival]);
 
   useGSAP(
     () => {
@@ -59,14 +61,14 @@ export function DestinationHero({
           scrollTrigger: { ...scroll, id: "diorama-content" },
         });
 
-        // Entrance — content settles in right after the morph lands.
+        // Entrance — the copy emerges as the travel cover lifts.
         gsap.from("[data-diorama-content] > *", {
           y: 28,
           opacity: 0,
           duration: 0.6,
           ease: "expo.out",
           stagger: 0.08,
-          delay: 0.15,
+          delay: 0.45,
         });
       });
     },
@@ -75,19 +77,17 @@ export function DestinationHero({
 
   return (
     <section ref={scopeRef} className="relative flex min-h-[70vh] items-end overflow-hidden">
-      <ViewTransition name={vtName} share="morph" default="none">
-        <div className="absolute inset-0 overflow-hidden">
-          <Image
-            src={imageSrc}
-            alt={imageAlt}
-            fill
-            priority
-            sizes="100vw"
-            data-diorama-img
-            className="scale-[1.18] object-cover"
-          />
-        </div>
-      </ViewTransition>
+      <div className="absolute inset-0 overflow-hidden">
+        <Image
+          src={imageSrc}
+          alt={imageAlt}
+          fill
+          priority
+          sizes="100vw"
+          data-diorama-img
+          className="scale-[1.18] object-cover"
+        />
+      </div>
 
       {/* Editorial scrim — same treatment as the home portada */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-black/10" />

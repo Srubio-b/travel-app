@@ -58,8 +58,8 @@ const DESTINATION_IMAGES: Record<string, DestinationImage> = {
     alt: "Calle colonial caribeña de arquitectura colorida",
   },
   "san-andres": {
-    unsplashId: "1544551763-46a013bb70d5",
-    alt: "Arrecife y snorkel en el mar caribeño",
+    unsplashId: "1540541338287-41700207dee6",
+    alt: "Vista aérea de la costa caribeña turquesa",
   },
 };
 
