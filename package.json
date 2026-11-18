@@ -13,8 +13,10 @@
     "verify": "pnpm typecheck && pnpm lint && pnpm format:check"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.110.1",
+    "gsap": "^3.15.1",
     "next": "16.2.10",
     "next-intl": "^4.13.1",
     "react": "19.2.4",

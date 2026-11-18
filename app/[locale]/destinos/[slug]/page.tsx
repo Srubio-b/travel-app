@@ -1,8 +1,9 @@
-import Image from "next/image";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { PublicLayout } from "@/components/layout/PublicLayout";
+import { DirectionalTransition } from "@/components/shared/DirectionalTransition";
+import { DestinationHero } from "@/components/destinations/DestinationHero";
 import { PackageCard } from "@/components/catalog/PackageCard";
 import { createClient } from "@/lib/supabase/server";
 import { getDestinationBySlug } from "@/lib/supabase/queries";
@@ -54,57 +55,49 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
 
   if (!destination) notFound();
 
+  const regionLine = destination.region
+    ? `${destination.region}, ${destination.country}`
+    : destination.country;
+
   return (
-    <PublicLayout>
-      {/* ───── Hero ───── */}
-      <section className="relative flex min-h-[50vh] items-center justify-center overflow-hidden">
-        <Image
-          src={destination.imageUrl ?? FALLBACK_IMAGES.travel}
-          alt={destination.name}
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
+    <DirectionalTransition>
+      <PublicLayout>
+        {/* ───── Hero — diorama 2.5D con morph de portada ───── */}
+        <DestinationHero
+          vtName={`destino-${slug}`}
+          name={destination.name}
+          regionLine={regionLine}
+          imageSrc={destination.imageUrl ?? FALLBACK_IMAGES.travel}
+          imageAlt={destination.name}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/30 to-transparent" />
-        <div className="relative z-10 mx-auto max-w-2xl px-6 text-center">
-          <h1 className="font-display text-5xl leading-display tracking-tight text-white sm:text-6xl lg:text-7xl">
-            {destination.name}
-          </h1>
-          <p className="mt-2 text-lg text-white/70">
-            {destination.region
-              ? `${destination.region}, ${destination.country}`
-              : destination.country}
-          </p>
-        </div>
-      </section>
 
-      {/* ───── Content ───── */}
-      <section className="container-page py-16 sm:py-24">
-        {destination.description && (
-          <div className="mx-auto max-w-3xl">
-            <p className="prose-content text-lg text-muted">{destination.description}</p>
-          </div>
-        )}
-
-        <div className="mx-auto mt-16 max-w-5xl">
-          <h2 className="font-display text-3xl leading-display tracking-tight">
-            {t("availablePackages")}
-          </h2>
-
-          {destination.packages.length === 0 ? (
-            <div className="mt-8 px-6 py-16 text-center">
-              <p className="text-muted">{t("noPackages")}</p>
-            </div>
-          ) : (
-            <div className="mt-8 grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
-              {destination.packages.map((pkg) => (
-                <PackageCard key={pkg.slug} pkg={pkg} />
-              ))}
+        {/* ───── Content ───── */}
+        <section className="container-page py-16 sm:py-24">
+          {destination.description && (
+            <div className="mx-auto max-w-3xl">
+              <p className="prose-content text-lg text-muted">{destination.description}</p>
             </div>
           )}
-        </div>
-      </section>
-    </PublicLayout>
+
+          <div className="mx-auto mt-16 max-w-5xl">
+            <h2 className="font-display text-3xl leading-display tracking-tight">
+              {t("availablePackages")}
+            </h2>
+
+            {destination.packages.length === 0 ? (
+              <div className="mt-8 px-6 py-16 text-center">
+                <p className="text-muted">{t("noPackages")}</p>
+              </div>
+            ) : (
+              <div className="mt-8 grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
+                {destination.packages.map((pkg) => (
+                  <PackageCard key={pkg.slug} pkg={pkg} />
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      </PublicLayout>
+    </DirectionalTransition>
   );
 }
