@@ -42,19 +42,22 @@ export function useDestinationTravel(): DestinationTravelContextValue {
 }
 
 /**
- * The destination journey — a three-act cover transition.
+ * The destination journey — a three-act cover transition, following the
+ * HyperFrames "object becomes the world" recipe.
  *
  * Act 1 (descend): the card's photograph grows from its exact on-screen rect
- * to a full-viewport cover while the camera keeps sinking into it (slow
- * zoom + cinematic dim). The page — header and footer included — swaps
- * underneath, hidden by the cover.
+ * to a full-viewport cover — its corner radius shrinking to nothing as it
+ * stops being a card and becomes the world — while the camera keeps sinking
+ * into it (slow zoom + cinematic dim). The page, header and footer included,
+ * swaps underneath, hidden by the cover.
  *
  * Act 2 (arrive): when the destination page mounts, its hero — a DIFFERENT
  * photograph (golden hour, standing in the place) — cross-fades in beneath
  * the cover: the view changes as the traveler lands.
  *
- * Act 3 (settle): the cover fades out and the page — header and footer
- * back in place — emerges softly on top of it.
+ * Act 3 (settle): the cover leaves fast (exits are 40-50% shorter than
+ * entrances, accelerating) and the page — header and footer back in place —
+ * emerges softly on top of it.
  *
  * `prefers-reduced-motion` skips the whole choreography: plain navigation.
  * The choreography is driven imperatively (refs + direct functions) so GSAP
@@ -118,6 +121,7 @@ export function DestinationTravelProvider({ children }: { children: ReactNode })
         y: travel.rect.top,
         scaleX: travel.rect.width / vw,
         scaleY: travel.rect.height / vh,
+        borderRadius: "4px", // the card's rounded-sm — it shrinks as the card becomes the world
         transformOrigin: "0 0",
       });
       gsap.set(zoom, { scale: 1 });
@@ -130,20 +134,21 @@ export function DestinationTravelProvider({ children }: { children: ReactNode })
         arrived = true;
 
         // Act 2 + 3 — the view changes: cover cross-fades out over the
-        // arrival hero while settling its zoom; the page (header and
-        // footer included) emerges softly on top.
+        // arrival hero while settling its zoom; the page (header and footer
+        // included) emerges softly on top. Doctrine: exits are 40-50%
+        // shorter than the entrance and accelerate on the way out.
         root.style.pointerEvents = "none";
 
         gsap
           .timeline({ onComplete: () => setTravel(null) })
-          .to(zoom, { scale: 1.14, duration: 0.9, ease: "power2.out" }, 0)
-          .to(root, { autoAlpha: 0, duration: 0.8, ease: "power2.inOut" }, 0.1);
+          .to(zoom, { scale: 1.14, duration: 0.5, ease: "power2.out" }, 0)
+          .to(root, { autoAlpha: 0, duration: 0.5, ease: "power2.in" }, 0.05);
       };
 
       arriveRef.current = arrive;
 
       // Act 1 — the descent: the card grows to fill the viewport while the
-      // camera keeps sinking toward the ground.
+      // camera keeps sinking toward the ground; its corners straighten out.
       gsap
         .timeline({
           onComplete: () => {
@@ -154,7 +159,19 @@ export function DestinationTravelProvider({ children }: { children: ReactNode })
             safetyTimerRef.current = setTimeout(arrive, 4000);
           },
         })
-        .to(box, { x: 0, y: 0, scaleX: 1, scaleY: 1, duration: 0.85, ease: "power3.inOut" }, 0)
+        .to(
+          box,
+          {
+            x: 0,
+            y: 0,
+            scaleX: 1,
+            scaleY: 1,
+            borderRadius: 0,
+            duration: 0.85,
+            ease: "power3.inOut",
+          },
+          0,
+        )
         .to(zoom, { scale: 1.3, duration: 2.2, ease: "none" }, 0)
         .to(scrim, { autoAlpha: 0.35, duration: 1.3, ease: "power1.inOut" }, 0.3);
 

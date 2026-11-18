@@ -1,12 +1,12 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import { SplitText } from "gsap/SplitText";
 import { useGSAP } from "@gsap/react";
 import { Link } from "@/lib/i18n/navigation";
-import { FALLBACK_IMAGES } from "@/lib/config/images";
+import { FALLBACK_IMAGES, HERO_LOOP_VIDEO } from "@/lib/config/images";
 
 gsap.registerPlugin(useGSAP, SplitText);
 
@@ -18,14 +18,32 @@ type EditorialHeroProps = {
 };
 
 /**
- * Portada editorial — full-bleed cover with masked SplitText reveal.
+ * Portada editorial — full-bleed cover with masked SplitText reveal and
+ * ambient destination footage.
  *
- * Motion contract (DESIGN.md): the reveal choreography runs only when the user
- * has no reduced-motion preference; content is fully visible by default
- * (progressive enhancement — no visibility is gated on the animation).
+ * Motion contract (DESIGN.md + HyperFrames doctrine): the reveal runs only
+ * without reduced-motion preference; every element lands with its own role
+ * ease; the title lands dead still and the life stays in the world behind it
+ * (the looping footage), never in the type.
  */
 export function EditorialHero({ title, subtitle, cta, ctaHref }: EditorialHeroProps) {
   const containerRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoPlaying, setVideoPlaying] = useState(false);
+
+  // Ambient footage: play only for users without a reduced-motion preference.
+  // Autoplay-policy or transient failures keep the poster photograph — the
+  // <Image> layer below never stops being the LCP element.
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.play().catch(() => {
+      // Autoplay policies or a transient failure: the photograph stays.
+    });
+  }, []);
 
   useGSAP(
     () => {
@@ -42,7 +60,7 @@ export function EditorialHero({ title, subtitle, cta, ctaHref }: EditorialHeroPr
               yPercent: 110,
               duration: 0.9,
               ease: "expo.out",
-              stagger: 0.04,
+              stagger: 0.06,
             });
           },
         });
@@ -69,7 +87,8 @@ export function EditorialHero({ title, subtitle, cta, ctaHref }: EditorialHeroPr
 
   return (
     <section ref={containerRef} className="relative flex min-h-dvh items-end overflow-hidden">
-      {/* Fallback background image — reemplazar con foto real del destino destacado */}
+      {/* Poster photograph — LCP element; the ken-burns keeps it alive when
+          reduced motion (or a failed autoplay) leaves it in charge. */}
       <Image
         src={FALLBACK_IMAGES.hero}
         alt=""
@@ -78,6 +97,23 @@ export function EditorialHero({ title, subtitle, cta, ctaHref }: EditorialHeroPr
         sizes="100vw"
         className="animate-ken-burns object-cover"
       />
+
+      {/* Ambient destination footage — fades in only once it is actually
+          playing; stays transparent (photograph visible) otherwise. */}
+      <video
+        ref={videoRef}
+        src={HERO_LOOP_VIDEO}
+        muted
+        loop
+        playsInline
+        preload="none"
+        aria-hidden="true"
+        onPlaying={() => setVideoPlaying(true)}
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[560ms] ease-out-expo ${
+          videoPlaying ? "opacity-100" : "opacity-0"
+        }`}
+      />
+
       {/* Editorial scrim — keeps photography vivid while anchoring the type */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-black/10" />
 
