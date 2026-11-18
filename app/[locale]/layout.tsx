@@ -4,6 +4,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/lib/i18n/routing";
 import { ThemeProvider, themeAntiFlashScript } from "@/components/shared/ThemeProvider";
+import { DestinationTravelProvider } from "@/components/transitions/DestinationTravel";
 import { SchemaScript } from "@/components/shared/SchemaScript";
 import { SITE_URL } from "@/lib/config/site";
 import "../globals.css";
@@ -70,7 +71,9 @@ export default async function LocaleLayout({
       <body className="min-h-full flex flex-col">
         <SchemaScript schema={businessSchema} />
         <NextIntlClientProvider>
-          <ThemeProvider>{children}</ThemeProvider>
+          <ThemeProvider>
+            <DestinationTravelProvider>{children}</DestinationTravelProvider>
+          </ThemeProvider>
         </NextIntlClientProvider>
       </body>
     </html>
