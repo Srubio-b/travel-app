@@ -16,10 +16,10 @@ type DestinationCardLinkProps = {
 
 /**
  * Catalog card that starts the destination journey instead of navigating
- * directly. On click it hands the card image's exact viewport rect and the
- * browser-selected source to the travel overlay, which dives into the
- * photograph and lands on the destination page. Keyboard activation
- * follows the same path (Enter triggers click on links).
+ * directly. On click it hands the card image's exact viewport rect and its
+ * original URL to the travel overlay, which dives into the photograph and
+ * lands on the destination page. Keyboard activation follows the same path
+ * (Enter triggers click on links).
  */
 export function DestinationCardLink({
   href,
@@ -38,12 +38,14 @@ export function DestinationCardLink({
     if (!figure) return;
 
     const rect = figure.getBoundingClientRect();
-    const img = figure.querySelector("img");
-    const src = img?.currentSrc || imageSrc || FALLBACK_IMAGES.card;
 
+    // Use the ORIGINAL resolved URL, not img.currentSrc: in dev the browser
+    // renders next/image through the /_next/image optimizer proxy, and
+    // feeding that proxied URL to another <Image> creates a recursive
+    // optimizer request that fails and leaves the cover blank.
     startTravel({
       href,
-      src,
+      src: imageSrc || FALLBACK_IMAGES.card,
       alt: name,
       rect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
     });
