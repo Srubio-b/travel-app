@@ -182,7 +182,9 @@ Esquinas editoriales afiladas: 4px en botones e imágenes, 8px solo en superfici
 
 - **Do** dar protagonismo absoluto a la fotografía real: full-bleed, alta resolución, alt descriptivo.
 - **Do** usar tokens `--color-*` siempre — jamás hex crudo en componentes.
-- **Do** animar con los easings `--ease-out-*` y las duraciones de la escala motion (150/280/560ms).
+- **Do** animar cada elemento por su rol: los arrivals aterrizan con cola larga (expo.out), los movimientos de cámara van inOut, las salidas aceleran (power3.in) — la misma curva en todo se lee generado.
+- **Do** hacer salidas 40-50% más cortas que las entradas; encadenar elementos con overlap del 30-50%; stagger 60-120ms entre palabras.
+- **Do** dejar los titulares aterrados y quietos: el motion vive en el mundo (fotografía/video de fondo), nunca en el texto.
 - **Do** incluir fallback `prefers-reduced-motion` en cada animación.
 
 ### Don't:

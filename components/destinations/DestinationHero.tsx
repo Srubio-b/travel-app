@@ -61,14 +61,15 @@ export function DestinationHero({ name, regionLine, imageSrc, imageAlt }: Destin
           scrollTrigger: { ...scroll, id: "diorama-content" },
         });
 
-        // Entrance — the copy emerges as the travel cover lifts.
+        // Entrance — the copy enters while the travel cover is still lifting
+        // (30-50% overlap per the motion doctrine).
         gsap.from("[data-diorama-content] > *", {
           y: 28,
           opacity: 0,
           duration: 0.6,
           ease: "expo.out",
           stagger: 0.08,
-          delay: 0.45,
+          delay: 0.3,
         });
       });
     },

@@ -38,3 +38,21 @@ export const ARRIVAL_HERO_IMAGES: Record<string, string> = {
   cartagena: "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=1600&q=80",
   "san-andres": "https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=1600&q=80",
 } as const;
+
+/**
+ * Ambient hero footage — a light (2.6 MB) looping destination video behind
+ * the home portada. Pexels license (free for commercial use, no attribution
+ * required), stored in the unified Supabase bucket so runtime depends on no
+ * third-party CDN. Served with the poster photograph underneath: the video
+ * fades in only once it is actually playing, and reduced-motion users keep
+ * the static photograph.
+ */
+export const HERO_LOOP_VIDEO = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/package-images/editorial/hero-loop.mp4`;
+
+/**
+ * The editorial tide — a synthetic HyperFrames-rendered loop (106 KB) of
+ * terracotta ribbons drifting over paper. Each layer travels an exact number
+ * of its own period in 12s, so the loop point is mathematically seamless.
+ * Used as an ambient band behind the home About section.
+ */
+export const TIDE_LOOP_VIDEO = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/package-images/editorial/tide-loop.mp4`;
