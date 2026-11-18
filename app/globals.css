@@ -18,6 +18,17 @@
   --success: oklch(0.45 0.15 145);
   --success-subtle: oklch(0.93 0.03 145);
   --ink: #000;
+
+  /* ───── Editorial redesign (F0) ───── */
+
+  /* Terracotta ramp — deep for hover/pressed, foreground for text on primary */
+  --primary-deep: oklch(0.42 0.12 28);
+  --primary-foreground: oklch(0.99 0.005 60);
+
+  /* Motion scale — durations paired with --ease-* utilities below */
+  --duration-fast: 150ms;
+  --duration-base: 280ms;
+  --duration-slow: 560ms;
 }
 
 .dark {
@@ -34,6 +45,10 @@
   --success: oklch(0.6 0.12 145);
   --success-subtle: oklch(0.25 0.03 145);
   --ink: #fff;
+
+  /* ───── Editorial redesign (F0) ───── */
+  --primary-deep: oklch(0.5 0.13 28);
+  --primary-foreground: oklch(0.13 0.005 60);
 }
 
 @theme inline {
@@ -43,6 +58,8 @@
   --color-border: var(--border);
   --color-primary: var(--primary);
   --color-primary-subtle: var(--primary-subtle);
+  --color-primary-deep: var(--primary-deep);
+  --color-primary-foreground: var(--primary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-destructive: var(--destructive);
@@ -55,6 +72,11 @@
   --leading-display: 1.1;
   --leading-snug: 1.3;
   --leading-relaxed: 1.7;
+
+  /* Editorial easings — generate ease-out-expo / ease-out-quart / ease-inout-smooth utilities */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-inout-smooth: cubic-bezier(0.45, 0, 0.15, 1);
 }
 
 /* ───── Base ───── */
@@ -87,9 +109,11 @@ body {
 ::-webkit-scrollbar {
   width: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 3px;
